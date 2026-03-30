@@ -40,16 +40,16 @@ export default function ClientCard() {
     telephone: "+216 12 345 678",
     email: "jean.dupont@email.com",
     ville: "Tunis",
-    campagne: "Vente CRM",
+    campagne: "CRM Sales",
     statut: "Prospect"
   });
 
   // Simuler l'historique des appels
   useEffect(() => {
     setCallHistory([
-      { date: "2024-01-15", time: "14:30", duration: "3:45", result: "Pas intéressé" },
-      { date: "2024-01-10", time: "10:15", duration: "5:20", result: "Rappel demandé" },
-      { date: "2024-01-05", time: "16:45", duration: "2:30", result: "Occupé" },
+      { date: "2024-01-15", time: "14:30", duration: "3:45", result: "Not interested" },
+      { date: "2024-01-10", time: "10:15", duration: "5:20", result: "Callback requested" },
+      { date: "2024-01-05", time: "16:45", duration: "2:30", result: "Busy" },
     ]);
   }, []);
 
@@ -101,10 +101,10 @@ export default function ClientCard() {
     }
 
     const qualificationMessages = {
-      "OK": { content: "Client qualifié ✅ - Prêt pour la suite", color: "#52c41a" },
-      "injionables": { content: "Client injoignable 📞 - Rappel programmé", color: "#faad14" },
-      "occupé": { content: "Client occupé ⏰ - Rappel ultérieur", color: "#1890ff" },
-      "hors cible": { content: "Client hors cible 🎯 - Désistement", color: "#ff4d4f" }
+      "OK": { content: "Client qualifié ✅ - Prêt pour la suite", color: "#f97316" },
+      "injionables": { content: "Client injoignable 📞 - Rappel programmé", color: "#f97316" },
+      "occupé": { content: "Client occupé ⏰ - Rappel ultérieur", color: "#f97316" },
+      "hors cible": { content: "Client hors cible 🎯 - Désistement", color: "#f97316" }
     };
     
     const msg = qualificationMessages[qualification];
@@ -115,9 +115,9 @@ export default function ClientCard() {
 
   const getDispositionColor = () => {
     switch(disposition) {
-      case "Vente": return "#52c41a";
-      case "Rappel": return "#1890ff";
-      case "Pas intéressé": return "#ff4d4f";
+      case "Vente": return "#f97316";
+      case "Rappel": return "#f97316";
+      case "Pas intéressé": return "#f97316";
       default: return "#d9d9d9";
     }
   };
@@ -125,7 +125,7 @@ export default function ClientCard() {
   const steps = [
     { title: "Identification", icon: <UserOutlined /> },
     { title: "Qualification", icon: <StarOutlined /> },
-    { title: "Résultat", icon: <CheckCircleOutlined /> },
+    { title: "Result", icon: <CheckCircleOutlined /> },
   ];
 
   return (
@@ -138,17 +138,17 @@ export default function ClientCard() {
         <Card
           title={
             <Space>
-              <PhoneOutlined style={{ color: "#00c6fb" }} />
-              <span style={{ fontSize: "18px", fontWeight: "bold" }}>Fiche Client - Centre d'appels</span>
+              <PhoneOutlined style={{ color: "#f97316" }} />
+              <span style={{ fontSize: "18px", fontWeight: "bold", color: "#1a1a1a" }}>Client Card - Call Center</span>
             </Space>
           }
           extra={
             <Space>
               <Tooltip title="Script d'appel">
-                <Button type="text" icon={<QuestionCircleOutlined />} onClick={() => message.info("Suivez le script d'appel")} />
+                <Button type="text" icon={<QuestionCircleOutlined style={{ color: "#f97316" }} />} onClick={() => message.info("Suivez le script d'appel")} />
               </Tooltip>
               <Tooltip title="Historique">
-                <Button type="text" icon={<HistoryOutlined />} onClick={() => message.info("Affichage de l'historique")} />
+                <Button type="text" icon={<HistoryOutlined style={{ color: "#f97316" }} />} onClick={() => message.info("Affichage de l'historique")} />
               </Tooltip>
             </Space>
           }
@@ -168,25 +168,25 @@ export default function ClientCard() {
             style={styles.contactHeader}
           >
             <div style={styles.contactAvatar}>
-              <Avatar size={64} icon={<UserOutlined />} style={{ background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" }} />
+              <Avatar size={64} icon={<UserOutlined />} style={{ background: "#030302" }} />
               <Badge status="success" style={{ position: "absolute", bottom: 0, right: 0 }} />
             </div>
             <div style={styles.contactInfo}>
               <div style={styles.contactName}>
-                <Text strong style={{ fontSize: 18 }}>{contactInfo.prenom} {contactInfo.nom}</Text>
-                <StarOutlined style={{ color: clientRating > 0 ? "#faad14" : "#d9d9d9", marginLeft: 10 }} />
+                <Text strong style={{ fontSize: 18, color: "#1a1a1a" }}>{contactInfo.prenom} {contactInfo.nom}</Text>
+                <StarOutlined style={{ color: clientRating > 0 ? "#f97316" : "#d9d9d9", marginLeft: 10 }} />
               </div>
-              <div><PhoneOutlined style={{ marginRight: 8, color: "#00c6fb" }} /> {contactInfo.telephone}</div>
-              <div><MailOutlined style={{ marginRight: 8, color: "#00c6fb" }} /> {contactInfo.email}</div>
-              <div><EnvironmentOutlined style={{ marginRight: 8, color: "#00c6fb" }} /> {contactInfo.ville}</div>
-              <div><Badge status="processing" /> Campagne: {contactInfo.campagne}</div>
+              <div style={{ color: "#666" }}><PhoneOutlined style={{ marginRight: 8, color: "#f97316" }} /> {contactInfo.telephone}</div>
+              <div style={{ color: "#666" }}><MailOutlined style={{ marginRight: 8, color: "#f97316" }} /> {contactInfo.email}</div>
+              <div style={{ color: "#666" }}><EnvironmentOutlined style={{ marginRight: 8, color: "#f97316" }} /> {contactInfo.ville}</div>
+              <div><Badge status="processing" style={{ backgroundColor: "#f97316" }} /> Campagne: {contactInfo.campagne}</div>
             </div>
             <div>
               <Badge count={disposition ? "✓" : 0} style={{ backgroundColor: getDispositionColor() }} />
             </div>
           </motion.div>
 
-          <Divider />
+          <Divider style={{ borderColor: "#e8e8e8" }} />
 
           <Space direction="vertical" size="middle" style={{ width: "100%" }}>
             {/* Résultat appel */}
@@ -196,8 +196,8 @@ export default function ClientCard() {
               transition={{ delay: 0.3 }}
             >
               <div style={styles.sectionLabel}>
-                <PhoneOutlined style={{ marginRight: 8 }} />
-                Résultat de l'appel
+                <PhoneOutlined style={{ marginRight: 8, color: "#f97316" }} />
+                Call Result
               </div>
               <Select
                 value={disposition}
@@ -206,11 +206,11 @@ export default function ClientCard() {
                 placeholder="Sélectionnez le résultat de l'appel"
                 size="large"
               >
-                <Option value="Vente"><Badge status="success" /> Vente - Client concluant</Option>
-                <Option value="Rappel"><Badge status="warning" /> Rappel - À recontacter</Option>
-                <Option value="Pas intéressé"><Badge status="error" /> Pas intéressé</Option>
-                <Option value="Fax">📠 Fax - Envoyer documentation</Option>
-                <Option value="NRP">📵 NRP - Ne pas rappeler</Option>
+                <Option value="Vente"><Badge status="success" /> Sale - Closed Client</Option>
+                <Option value="Rappel"><Badge status="warning" /> Callback - To Recontact</Option>
+                <Option value="Pas intéressé"><Badge status="error" />Not Interested</Option>
+                <Option value="Fax">📠 Fax - Send Documentation</Option>
+                <Option value="NRP">📵 DNC - Do Not Call</Option>
               </Select>
             </motion.div>
 
@@ -224,7 +224,7 @@ export default function ClientCard() {
                   style={{ overflow: "hidden" }}
                 >
                   <div style={styles.sectionLabel}>
-                    <CalendarOutlined style={{ marginRight: 8 }} />
+                    <CalendarOutlined style={{ marginRight: 8, color: "#f97316" }} />
                     Date et heure du rappel
                   </div>
                   <DatePicker
@@ -241,7 +241,7 @@ export default function ClientCard() {
               )}
             </AnimatePresence>
 
-            <Divider style={{ margin: "8px 0" }} />
+            <Divider style={{ margin: "8px 0", borderColor: "#e8e8e8" }} />
 
             {/* Section qualification */}
             <motion.div
@@ -250,8 +250,8 @@ export default function ClientCard() {
               transition={{ delay: 0.4 }}
             >
               <div style={styles.sectionLabel}>
-                <StarOutlined style={{ marginRight: 8 }} />
-                Qualification du contact
+                <StarOutlined style={{ marginRight: 8, color: "#f97316" }} />
+                Contact Qualification
               </div>
               <Space style={{ width: "100%" }}>
                 <Select
@@ -261,19 +261,19 @@ export default function ClientCard() {
                   placeholder="Qualifier le client"
                   size="large"
                 >
-                  <Option value="injionables">📵 Injionables</Option>
-                  <Option value="occupé">⏰ Occupé</Option>
-                  <Option value="OK">✅ OK - Qualifié</Option>
-                  <Option value="hors cible">🎯 Hors cible</Option>
+                  <Option value="injionables">📵 Unreachable</Option>
+                  <Option value="occupé">⏰ Busy</Option>
+                  <Option value="OK">✅ OK - Qualified</Option>
+                  <Option value="hors cible">🎯  Out of Target</Option>
                 </Select>
                 <Button 
                   type="primary"
                   size="large"
                   onClick={handleQualify}
                   icon={<CheckCircleOutlined />}
-                  style={styles.qualifyButton}
+                  style={{ ...styles.qualifyButton, background: "#f97316", borderColor: "#f97316" }}
                 >
-                  Qualifier
+                  Qualify
                 </Button>
               </Space>
             </motion.div>
@@ -285,8 +285,8 @@ export default function ClientCard() {
               transition={{ delay: 0.5 }}
             >
               <div style={styles.sectionLabel}>
-                <ClockCircleOutlined style={{ marginRight: 8 }} />
-                Notes de l'appel
+                <ClockCircleOutlined style={{ marginRight: 8, color: "#f97316" }} />
+                Call Notes
               </div>
               <Input.TextArea
                 rows={3}
@@ -303,15 +303,15 @@ export default function ClientCard() {
               transition={{ delay: 0.6 }}
             >
               <div style={styles.sectionLabel}>
-                <HistoryOutlined style={{ marginRight: 8 }} />
-                Historique des appels
+                <HistoryOutlined style={{ marginRight: 8, color: "#f97316" }} />
+                Call History
               </div>
               <Timeline style={{ marginTop: 10 }}>
                 {callHistory.slice(0, 3).map((call, idx) => (
-                  <Timeline.Item key={idx} color={call.result === "Vente" ? "green" : call.result === "Rappel" ? "blue" : "red"}>
+                  <Timeline.Item key={idx} color="#f97316">
                     <div>
-                      <Text strong>{call.date} {call.time}</Text>
-                      <div><Text type="secondary">Résultat: {call.result}</Text></div>
+                      <Text strong style={{ color: "#1a1a1a" }}>{call.date} {call.time}</Text>
+                      <div><Text type="secondary" style={{ color: "#666" }}>Résultat: {call.result}</Text></div>
                     </div>
                   </Timeline.Item>
                 ))}
@@ -332,20 +332,20 @@ export default function ClientCard() {
                 loading={isLoading}
                 style={styles.saveButton}
               >
-                Sauvegarder & Appel Suivant
+                Save & Next Call
               </Button>
             </motion.div>
 
-            {/* Canaux de communication */}
+            {/* Communication Channels*/}
             <div style={styles.socialButtons}>
-              <Tooltip title="Contacter via WhatsApp">
-                <Button icon={<WhatsAppOutlined />} style={{ color: "#25D366" }} />
+              <Tooltip title="Contact via WhatsApp">
+                <Button icon={<WhatsAppOutlined style={{ color: "#f97316" }} />} />
               </Tooltip>
-              <Tooltip title="Contacter via Messenger">
-                <Button icon={<FacebookOutlined />} style={{ color: "#1877F2" }} />
+              <Tooltip title="Contact via Messenger">
+                <Button icon={<FacebookOutlined style={{ color: "#f97316" }} />} />
               </Tooltip>
-              <Tooltip title="Envoyer un email">
-                <Button icon={<MailOutlined />} style={{ color: "#ea4335" }} />
+              <Tooltip title=" Send email">
+                <Button icon={<MailOutlined style={{ color: "#f97316" }} />} />
               </Tooltip>
             </div>
           </Space>
@@ -354,7 +354,7 @@ export default function ClientCard() {
 
       {/* Modal Calendrier */}
       <Modal
-        title="📅 Calendrier des rendez-vous"
+        title="📅 Appointment Calendar"
         open={isCalendarVisible}
         onCancel={() => setIsCalendarVisible(false)}
         footer={[
@@ -371,7 +371,7 @@ export default function ClientCard() {
             if (rappelDate && dayjs(rappelDate).isSame(date, "day")) {
               events.push(
                 <div key="rappel" style={styles.calendarEvent}>
-                  📞 Rappel client
+                  📞 Client callback
                 </div>
               );
             }
@@ -386,9 +386,9 @@ export default function ClientCard() {
 const styles = {
   card: {
     borderRadius: 20,
-    background: "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)",
+    background: "#ffffff",
     border: "none",
-    boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+    boxShadow: "0 8px 32px rgba(0,0,0,0.05)",
   },
   cardBody: {
     padding: 24,
@@ -398,10 +398,11 @@ const styles = {
     alignItems: "center",
     gap: 20,
     padding: 16,
-    background: "linear-gradient(135deg, #667eea15, #764ba215)",
+    background: "#fafafa",
     borderRadius: 16,
     marginBottom: 16,
     position: "relative",
+    border: "1px solid #e8e8e8",
   },
   contactAvatar: {
     position: "relative",
@@ -417,19 +418,19 @@ const styles = {
   sectionLabel: {
     marginBottom: 8,
     fontWeight: 500,
-    color: "#333",
+    color: "#1a1a1a",
   },
   qualifyButton: {
-    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    background: "#f97316",
     border: "none",
   },
   saveButton: {
     height: 48,
     fontSize: 16,
     fontWeight: "bold",
-    background: "linear-gradient(135deg, #00c6fb 0%, #005bea 100%)",
+    background: "#f97316",
     border: "none",
-    boxShadow: "0 2px 8px rgba(0,198,251,0.3)",
+    boxShadow: "0 2px 8px rgba(249,115,22,0.3)",
   },
   socialButtons: {
     display: "flex",
@@ -438,7 +439,7 @@ const styles = {
     marginTop: 16,
   },
   calendarEvent: {
-    background: "#1890ff",
+    background: "#f97316",
     color: "white",
     padding: "2px 4px",
     borderRadius: 4,

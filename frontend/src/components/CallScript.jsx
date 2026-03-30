@@ -68,8 +68,8 @@ export default function CallScript() {
       <Card
         title={
           <Space>
-            <SoundOutlined style={{ color: "#00c6fb" }} />
-            <Title level={4} style={{ margin: 0 }}>Script d'appel intelligent</Title>
+            <SoundOutlined style={{ color: "#f97316" }} />
+            <Title level={4} style={{ margin: 0, color: "#1a1a1a" }}>Script d'appel intelligent</Title>
           </Space>
         }
         style={styles.card}
@@ -79,13 +79,13 @@ export default function CallScript() {
           {/* Progression */}
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-              <Text type="secondary">Étape {currentScriptIndex + 1}/{scripts.length}</Text>
-              <Text type="secondary">{Math.round((currentScriptIndex + 1) / scripts.length * 100)}%</Text>
+              <Text type="secondary" style={{ color: "#666" }}>Étape {currentScriptIndex + 1}/{scripts.length}</Text>
+              <Text type="secondary" style={{ color: "#666" }}>{Math.round((currentScriptIndex + 1) / scripts.length * 100)}%</Text>
             </div>
             <Progress 
               percent={(currentScriptIndex + 1) / scripts.length * 100} 
               showInfo={false}
-              strokeColor={{ from: '#00c6fb', to: '#005bea' }}
+              strokeColor="#f97316"
             />
           </div>
 
@@ -98,14 +98,14 @@ export default function CallScript() {
             style={styles.scriptContainer}
           >
             <div style={styles.scriptHeader}>
-              <Title level={5}>{scripts[currentScriptIndex].title}</Title>
+              <Title level={5} style={{ color: "#1a1a1a" }}>{scripts[currentScriptIndex].title}</Title>
               <Space>
                 <Tooltip title="Copier le script">
                   <Button 
                     icon={copied ? <CheckCircleOutlined /> : <CopyOutlined />} 
                     size="small"
                     onClick={handleCopy}
-                    style={copied ? { color: "#52c41a" } : {}}
+                    style={copied ? { color: "#f97316" } : {}}
                   />
                 </Tooltip>
               </Space>
@@ -118,7 +118,7 @@ export default function CallScript() {
               description={scripts[currentScriptIndex].tips}
               type="info"
               showIcon
-              style={{ marginTop: 12 }}
+              style={{ marginTop: 12, background: "#fff7e6", borderColor: "#ffd591" }}
             />
           </motion.div>
 
@@ -134,26 +134,27 @@ export default function CallScript() {
               type="primary"
               onClick={() => setCurrentScriptIndex(Math.min(scripts.length - 1, currentScriptIndex + 1))}
               disabled={currentScriptIndex === scripts.length - 1}
+              style={{ background: "#f97316", borderColor: "#f97316" }}
             >
               Suivant
             </Button>
           </Space>
 
-          <Divider style={{ margin: "12px 0" }} />
+          <Divider style={{ margin: "12px 0", borderColor: "#e8e8e8" }} />
 
           {/* Objections fréquentes */}
           <div>
             <div style={styles.sectionHeader}>
-              <BulbOutlined style={{ marginRight: 8, color: "#faad14" }} />
-              <Text strong>Objections fréquentes</Text>
+              <BulbOutlined style={{ marginRight: 8, color: "#f97316" }} />
+              <Text strong style={{ color: "#1a1a1a" }}>Objections fréquentes</Text>
             </div>
             <Collapse ghost>
               {objections.map((obj, idx) => (
                 <Panel 
-                  header={<Text strong>{obj.objection}</Text>} 
+                  header={<Text strong style={{ color: "#1a1a1a" }}>{obj.objection}</Text>} 
                   key={idx}
                 >
-                  <Paragraph style={{ color: "#00c6fb", margin: 0 }}>
+                  <Paragraph style={{ color: "#f97316", margin: 0 }}>
                     💬 {obj.response}
                   </Paragraph>
                 </Panel>
@@ -164,17 +165,17 @@ export default function CallScript() {
           {/* Historique 5 derniers appels */}
           <div>
             <div style={styles.sectionHeader}>
-              <HistoryOutlined style={{ marginRight: 8 }} />
-              <Text strong>5 derniers appels</Text>
+              <HistoryOutlined style={{ marginRight: 8, color: "#f97316" }} />
+              <Text strong style={{ color: "#1a1a1a" }}>5 derniers appels</Text>
             </div>
             <List
               dataSource={lastCalls}
               renderItem={item => (
                 <List.Item>
                   <List.Item.Meta
-                    avatar={item.result === "Vente" ? <LikeOutlined style={{ color: "#52c41a" }} /> : <DislikeOutlined style={{ color: "#ff4d4f" }} />}
-                    title={item.name}
-                    description={`${item.time} • ${item.result}`}
+                    avatar={item.result === "Vente" ? <LikeOutlined style={{ color: "#f97316" }} /> : <DislikeOutlined style={{ color: "#f97316" }} />}
+                    title={<span style={{ color: "#1a1a1a" }}>{item.name}</span>}
+                    description={<span style={{ color: "#666" }}>{item.time} • {item.result}</span>}
                   />
                 </List.Item>
               )}
@@ -184,13 +185,14 @@ export default function CallScript() {
 
           {/* Feedback script */}
           <div style={styles.feedback}>
-            <Text type="secondary">Ce script vous a-t-il été utile ?</Text>
+            <Text type="secondary" style={{ color: "#666" }}>Ce script vous a-t-il été utile ?</Text>
             <Space>
               <Tooltip title="Utile">
                 <Button 
                   icon={<LikeOutlined />} 
                   type={helpful === true ? "primary" : "default"}
                   onClick={() => handleHelpful(true)}
+                  style={helpful === true ? { background: "#f97316", borderColor: "#f97316" } : {}}
                 />
               </Tooltip>
               <Tooltip title="Pas utile">
@@ -221,12 +223,12 @@ const styles = {
   card: {
     borderRadius: 20,
     border: "none",
-    background: "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)",
-    boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+    background: "#ffffff",
+    boxShadow: "0 8px 32px rgba(0,0,0,0.05)",
     height: "100%",
   },
   scriptContainer: {
-    background: "#f7f9fc",
+    background: "#fafafa",
     borderRadius: 12,
     padding: 16,
     border: "1px solid #e8e8e8",
@@ -240,7 +242,7 @@ const styles = {
   scriptContent: {
     fontSize: 14,
     lineHeight: 1.6,
-    color: "#333",
+    color: "#1a1a1a",
   },
   sectionHeader: {
     marginBottom: 12,
@@ -253,5 +255,5 @@ const styles = {
     alignItems: "center",
     paddingTop: 12,
     borderTop: "1px solid #f0f0f0",
-  },
+  }, 
 };

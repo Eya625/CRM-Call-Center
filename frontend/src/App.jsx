@@ -10,10 +10,11 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         {/* Page de login hors Layout */}
-        <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Login />} />
 
         {/* Toutes les autres pages avec le Layout */}
-        <Route element={<Layout />}>
+          <Route element={<Layout />}>
+
           <Route path="/agent" element={<Agent />} />
           <Route path="/" element={<Navigate to="/Login" replace />} />{" "}
           <Route path="/manager" element={<Manager />} />

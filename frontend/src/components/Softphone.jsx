@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {List, Card, Button, Select, Typography, Space, Tag, Progress, Badge, Modal, InputNumber, message, Tooltip } from "antd";
+import {List, Card, Button, Select, Typography, Space, Tag, Progress, Badge, Modal, InputNumber, message, Tooltip, Slider } from "antd";
 import { 
   AudioOutlined, 
   PhoneOutlined, 
@@ -97,17 +97,17 @@ export default function Softphone() {
   };
 
   const statusColor = {
-    Available: "#52c41a",
-    "On Call": "#faad14",
-    Paused: "#f5222d",
-    "Wrap-up": "#1890ff",
+    Available: "#f97316",
+    "On Call": "#f97316",
+    Paused: "#f97316",
+    "Wrap-up": "#f97316",
   };
 
   const statusAnimation = {
     Available: { scale: [1, 1.1, 1], transition: { repeat: Infinity, duration: 2 } },
     "On Call": { scale: [1, 1.05, 1], transition: { repeat: Infinity, duration: 1 } },
     Paused: { x: [0, -5, 5, 0], transition: { repeat: Infinity, duration: 0.5 } },
-    "Wrap-up": { rotate: [0, 360], transition: { repeat: Infinity, duration: 3 } },
+    "Wrap-up": {x: [0, -5, 5, 0], transition: { repeat: Infinity, duration: 3 } },
   };
 
   return (
@@ -120,8 +120,8 @@ export default function Softphone() {
         <Card
           title={
             <Space>
-              <PhoneOutlined style={{ color: "#00c6fb" }} />
-              <Title level={4} style={{ margin: 0, color: "#001529" }}>Softphone Pro</Title>
+              <PhoneOutlined style={{ color: "#f97316" }} />
+              <Title level={4} style={{ margin: 0, color: "#1a1a1a" }}>Softphone Pro</Title>
               <Badge 
                 status={status === "Available" ? "success" : status === "On Call" ? "processing" : "error"} 
                 text={status}
@@ -137,7 +137,7 @@ export default function Softphone() {
               animate={statusAnimation[status]}
               style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
             >
-              <Text strong>Statut Agent:</Text>
+              <Text strong style={{ color: "#1a1a1a" }}>Statut Agent:</Text>
               <Select
                 value={status}
                 onChange={setStatus}
@@ -181,7 +181,7 @@ export default function Softphone() {
               style={styles.callInfo}
             >
               <div>
-                <Text type="secondary">Numéro appelé</Text>
+                <Text type="secondary" style={{ color: "#666" }}>Numéro appelé</Text>
                 <InputNumber
                   value={currentNumber}
                   onChange={setCurrentNumber}
@@ -192,8 +192,8 @@ export default function Softphone() {
                 />
               </div>
               <div style={styles.timer}>
-                <ClockCircleOutlined />
-                <Text style={{ fontSize: 24, fontWeight: "bold", fontFamily: "monospace" }}>
+                <ClockCircleOutlined style={{ color: "#f97316" }} />
+                <Text style={{ fontSize: 24, fontWeight: "bold", fontFamily: "monospace", color: "#1a1a1a" }}>
                   {formatTime(callTime)}
                 </Text>
               </div>
@@ -209,15 +209,15 @@ export default function Softphone() {
                   percent={(callTime % 300) / 3}
                   showInfo={false}
                   strokeColor={{
-                    "0%": "#52c41a",
-                    "50%": "#faad14",
-                    "100%": "#ff4d4f",
+                    "0%": "#f97316",
+                    "50%": "#f97316",
+                    "100%": "#f97316",
                   }}
                   strokeWidth={8}
                 />
                 <div style={{ display: "flex", justifyContent: "space-between", marginTop: 5 }}>
-                  <Text type="secondary" style={{ fontSize: 11 }}>Début</Text>
-                  <Text type="secondary" style={{ fontSize: 11 }}>5 min</Text>
+                  <Text type="secondary" style={{ fontSize: 11, color: "#666" }}>Début</Text>
+                  <Text type="secondary" style={{ fontSize: 11, color: "#666" }}>5 min</Text>
                 </div>
               </motion.div>
             )}
@@ -232,6 +232,7 @@ export default function Softphone() {
                   disabled={!inCall}
                   onClick={() => setIsMuted(!isMuted)}
                   style={styles.controlButton}
+                  className={isMuted ? "orange-button" : ""}
                 >
                   {isMuted ? "Micro coupé" : "Mute"}
                 </Button>
@@ -244,6 +245,7 @@ export default function Softphone() {
                   disabled={!inCall}
                   onClick={() => setIsOnHold(!isOnHold)}
                   style={styles.controlButton}
+                  className={isOnHold ? "orange-button" : ""}
                 >
                   {isOnHold ? "En attente" : "Hold"}
                 </Button>
@@ -275,7 +277,7 @@ export default function Softphone() {
                     type="primary"
                     icon={<PhoneOutlined />}
                     onClick={handleStartCall}
-                    style={{ ...styles.callButton, background: "#52c41a" }}
+                    style={{ ...styles.callButton, background: "#f97316", borderColor: "#f97316" }}
                   >
                     Appeler
                   </Button>
@@ -298,8 +300,7 @@ export default function Softphone() {
             {/* Indicateurs de statut */}
             <div style={styles.statusIndicators}>
               {isMuted && <Tag icon={<SoundOutlined />} color="orange">Micro coupé</Tag>}
-              {isOnHold && <Tag icon={<PauseCircleOutlined />} color="blue">En attente</Tag>}
-              {status === "Wrap-up" && <Tag icon={<SyncOutlined spin />} color="purple">Post-appel...</Tag>}
+              {isOnHold && <Tag icon={<PauseCircleOutlined />} color="orange">En attente</Tag>}
             </div>
           </Space>
         </Card>
@@ -319,11 +320,11 @@ export default function Softphone() {
           animate={{ scale: 1 }}
           transition={{ type: "spring" }}
         >
-          <PhoneOutlined style={{ fontSize: 60, color: "#52c41a", marginBottom: 20 }} />
-          <Title level={4}>Appel entrant</Title>
-          <Text style={{ fontSize: 18, display: "block", marginBottom: 20 }}>{incomingCall}</Text>
+          <PhoneOutlined style={{ fontSize: 60, color: "#f97316", marginBottom: 20 }} />
+          <Title level={4} style={{ color: "#1a1a1a" }}>Appel entrant</Title>
+          <Text style={{ fontSize: 18, display: "block", marginBottom: 20, color: "#1a1a1a" }}>{incomingCall}</Text>
           <Space>
-            <Button type="primary" size="large" icon={<PhoneOutlined />} onClick={handleAcceptCall}>
+            <Button type="primary" size="large" icon={<PhoneOutlined />} onClick={handleAcceptCall} style={{ background: "#f97316", borderColor: "#f97316" }}>
               Accepter
             </Button>
             <Button danger size="large" icon={<CloseCircleOutlined />} onClick={handleRejectCall}>
@@ -351,9 +352,9 @@ export default function Softphone() {
             >
               <List.Item>
                 <List.Item.Meta
-                  avatar={<PhoneOutlined style={{ color: "#00c6fb" }} />}
-                  title={<Text strong>{call.number}</Text>}
-                  description={`Durée: ${formatTime(call.duration)} • ${call.date} ${call.time}`}
+                  avatar={<PhoneOutlined style={{ color: "#f97316" }} />}
+                  title={<Text strong style={{ color: "#1a1a1a" }}>{call.number}</Text>}
+                  description={<span style={{ color: "#666" }}>Durée: {formatTime(call.duration)} • {call.date} {call.time}</span>}
                 />
               </List.Item>
             </motion.div>
@@ -361,10 +362,50 @@ export default function Softphone() {
         />
         {callHistory.length === 0 && (
           <div style={{ textAlign: "center", padding: 40 }}>
-            <Text type="secondary">Aucun historique d'appel</Text>
+            <Text type="secondary" style={{ color: "#666" }}>Aucun historique d'appel</Text>
           </div>
         )}
       </Modal>
+
+      <style jsx>{`
+        :global(.ant-btn-primary) {
+          background: #f97316;
+          border-color: #f97316;
+        }
+        :global(.ant-btn-primary:hover) {
+          background: #fd8b3a;
+          border-color: #fd8b3a;
+        }
+        :global(.orange-button) {
+          background: #f97316;
+          border-color: #f97316;
+          color: white;
+        }
+        :global(.orange-button:hover) {
+          background: #fd8b3a;
+          border-color: #fd8b3a;
+        }
+        :global(.ant-tag-orange) {
+          background: #fff7e6;
+          border-color: #ffd591;
+          color: #f97316;
+        }
+        :global(.ant-progress-bg) {
+          background: #f97316 !important;
+        }
+        :global(.ant-badge-status-success) {
+          background-color: #f97316;
+        }
+        :global(.ant-badge-status-processing) {
+          background-color: #f97316;
+        }
+        :global(.ant-badge-status-error) {
+          background-color: #f97316;
+        }
+        :global(.ant-badge-status-warning) {
+          background-color: #f97316;
+        }
+      `}</style>
     </>
   );
 }
@@ -373,14 +414,14 @@ const styles = {
   card: {
     borderRadius: 20,
     border: "none",
-    background: "linear-gradient(135deg, #ffffff, #f8f9fa)",
-    boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+    background: "#ffffff",
+    boxShadow: "0 8px 32px rgba(0,0,0,0.05)",
   },
   callInfo: {
     padding: "16px",
-    background: "linear-gradient(135deg, #667eea15, #764ba215)",
+    background: "#fafafa",
     borderRadius: 16,
-    border: "1px solid #e0e0e0",
+    border: "1px solid #e8e8e8",
   },
   timer: {
     display: "flex",

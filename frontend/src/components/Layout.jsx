@@ -1,567 +1,593 @@
-import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { Outlet, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 
-const NAV_LINKS = [
-  { to: "/manager", label: "Manager", icon: IconGrid },
-  { to: "/admin", label: "Admin", icon: IconUser },
-];
+/* ══════════════════════════════════════
+   ICONS
+══════════════════════════════════════ */
+const IconHeadset = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+    <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z" />
+    <path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+  </svg>
+);
 
-function IconGrid() {
+const IconSearch = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+  </svg>
+);
+
+const IconBell = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+  </svg>
+);
+
+const IconSettings = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="3" />
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+  </svg>
+);
+
+const IconChevron = () => (
+  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="m9 18 6-6-6-6" />
+  </svg>
+);
+
+const IconActivity = () => (
+  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+  </svg>
+);
+
+const IconTarget = () => (
+  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />
+  </svg>
+);
+
+/* ══════════════════════════════════════
+   LIVE CLOCK
+══════════════════════════════════════ */
+function LiveClock() {
+  const [t, setT] = useState(new Date());
+  useEffect(() => {
+    const id = setInterval(() => setT(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const h = String(t.getHours()).padStart(2, "0");
+  const m = String(t.getMinutes()).padStart(2, "0");
+  const s = String(t.getSeconds()).padStart(2, "0");
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="7" height="7" rx="1.5" />
-      <rect x="14" y="3" width="7" height="7" rx="1.5" />
-      <rect x="3" y="14" width="7" height="7" rx="1.5" />
-      <rect x="14" y="14" width="7" height="7" rx="1.5" />
-    </svg>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+      <div style={{
+        fontFamily: "'JetBrains Mono', monospace",
+        fontSize: "20px", fontWeight: 400,
+        color: "#0F172A", letterSpacing: "-0.02em", lineHeight: 1,
+      }}>
+        <span>{h}</span>
+        <span style={{ color: "#F97316", animation: "colonBlink 1s step-end infinite" }}>:</span>
+        <span>{m}</span>
+        <span style={{ color: "#F97316", animation: "colonBlink 1s step-end infinite" }}>:</span>
+        <span style={{ color: "#94A3B8", fontSize: "15px" }}>{s}</span>
+      </div>
+      <div style={{
+        fontSize: "9px", fontWeight: 800, color: "#F97316",
+        letterSpacing: "0.12em", textTransform: "uppercase",
+        marginTop: "3px", fontFamily: "'Plus Jakarta Sans', sans-serif",
+      }}>
+        Real-Time Data
+      </div>
+    </div>
   );
 }
 
-function IconUser() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-    </svg>
-  );
-}
+/* ══════════════════════════════════════
+   PAGE LABELS
+══════════════════════════════════════ */
+const PAGE_LABELS = {
+  "/manager": "Manager",
+  "/admin": "Admin",
+  "/dashboard": "Dashboard",
+  "/agents": "Agents",
+  "/campaigns": "Campagnes",
+  "/reports": "Rapports",
+};
 
-function IconBell() {
-  return (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-    </svg>
-  );
-}
-
-function IconSearch() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-    </svg>
-  );
-}
-
-function IconChevron() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="m9 18 6-6-6-6" />
-    </svg>
-  );
-}
-
-function IconLogo() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-      <rect width="32" height="32" rx="10" fill="url(#lg)" />
-      <defs>
-        <linearGradient id="lg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#FF6B35" />
-          <stop offset="1" stopColor="#F97316" />
-        </linearGradient>
-      </defs>
-      <path d="M8 22 L16 9 L24 22" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      <path d="M11.5 17.5 L20.5 17.5" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function IconSettings() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="3" />
-      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-    </svg>
-  );
-}
-
+/* ══════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════ */
 export default function Layout() {
   const location = useLocation();
+  const [searchVal, setSearchVal] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
-  const pageTitle = NAV_LINKS.find(l => location.pathname.startsWith(l.to))?.label || "CRM";
+  const [notifOpen, setNotifOpen] = useState(false);
+
+  const pageTitle =
+    PAGE_LABELS[location.pathname] ||
+    Object.entries(PAGE_LABELS).find(([k]) => location.pathname.startsWith(k))?.[1] ||
+    "Dashboard";
 
   return (
     <div style={{
       minHeight: "100vh",
       display: "flex",
       flexDirection: "column",
-      background: "#0C0C0E",
-      fontFamily: "'Cabinet Grotesk', 'DM Sans', 'Segoe UI', sans-serif",
+      background: "#F8FAFC",
+      fontFamily: "'Plus Jakarta Sans', sans-serif",
+      color: "#0F172A",
+      backgroundImage: "radial-gradient(at 0% 0%, rgba(249,115,22,0.04) 0%, transparent 50%)",
     }}>
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Playfair+Display:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,100;1,9..144,300;1,9..144,700&display=swap');
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-          --bg: #0C0C0E;
-          --surface: #141416;
-          --surface2: #1A1A1E;
-          --surface3: #222228;
-          --border: rgba(255,255,255,0.06);
-          --border-hover: rgba(255,255,255,0.12);
           --accent: #F97316;
-          --accent-dim: rgba(249,115,22,0.15);
-          --accent-glow: rgba(249,115,22,0.25);
-          --text-1: #F4F4F5;
-          --text-2: #A1A1AA;
-          --text-3: #52525B;
+          --accent-b: #EA580C;
+          --ink: #0F172A;
+          --ink2: #334155;
+          --ink3: #64748B;
+          --ink4: #94A3B8;
+          --ink5: #CBD5E1;
+          --surface: #FFFFFF;
+          --surface2: #F8FAFC;
+          --surface3: #F1F5F9;
+          --border: #E2E8F0;
           --green: #10B981;
-          --red: #EF4444;
-          --yellow: #F59E0B;
+          --radius: 12px;
+          --radius-sm: 8px;
+          --radius-lg: 16px;
         }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 2px; }
+        ::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 4px; }
 
-        /* Nav link */
-        .nav-item {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          padding: 8px 16px;
-          border-radius: 10px;
-          font-size: 13.5px;
-          font-weight: 500;
-          color: var(--text-2);
-          text-decoration: none;
-          cursor: pointer;
-          transition: color 0.15s, background 0.15s;
-          position: relative;
-          white-space: nowrap;
-          letter-spacing: 0.01em;
-        }
-        .nav-item:hover { color: var(--text-1); background: rgba(255,255,255,0.05); }
-        .nav-item.active { color: var(--accent); background: var(--accent-dim); }
-        .nav-item.active .nav-dot {
-          opacity: 1;
-          transform: scale(1);
-        }
-        .nav-dot {
-          position: absolute;
-          bottom: -1px;
-          left: 50%;
-          transform: translateX(-50%) scale(0.5);
-          width: 18px;
-          height: 2px;
-          background: var(--accent);
-          border-radius: 2px;
-          opacity: 0;
-          transition: opacity 0.2s, transform 0.2s;
-        }
+        @keyframes colonBlink  { 0%,49%{opacity:1} 50%,100%{opacity:0.2} }
+        @keyframes pulseDot    { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.25);opacity:.7} }
+        @keyframes pageIn      { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes accentLine  { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+        @keyframes notifIn     { from{opacity:0;transform:translateY(-8px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+        @keyframes fadeIn      { from{opacity:0} to{opacity:1} }
+        @keyframes slideUp     { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
 
-        /* Icon btn */
-        .icon-btn {
-          width: 36px; height: 36px;
-          border-radius: 10px;
-          border: 1px solid var(--border);
-          background: var(--surface2);
+        .page-in { animation: pageIn 0.35s cubic-bezier(.22,.68,0,1.2) both; }
+
+        .search-box {
+          display: flex; align-items: center; gap: 9px;
+          background: #F1F5F9; border: 1px solid #E2E8F0;
+          padding: 9px 16px; border-radius: 100px; width: 280px;
+          transition: all 0.22s;
+        }
+        .search-box.focused {
+          background: white; border-color: var(--accent);
+          box-shadow: 0 0 0 3px rgba(249,115,22,0.12); width: 320px;
+        }
+        .search-box input {
+          background: none; border: none; outline: none; width: 100%;
+          font-size: 13px; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--ink);
+        }
+        .search-box input::placeholder { color: var(--ink5); }
+
+        .i-btn {
+          width: 36px; height: 36px; border-radius: 10px;
+          background: #F8FAFC; border: 1px solid var(--border);
           display: flex; align-items: center; justify-content: center;
-          cursor: pointer; color: var(--text-2);
-          transition: all 0.15s;
-          position: relative;
+          cursor: pointer; color: var(--ink3); position: relative;
+          transition: all 0.15s; flex-shrink: 0;
         }
-        .icon-btn:hover { border-color: var(--border-hover); color: var(--text-1); background: var(--surface3); }
+        .i-btn:hover { background: white; border-color: #CBD5E1; color: var(--ink); box-shadow: 0 2px 8px rgba(0,0,0,0.07); transform: translateY(-1px); }
+        .i-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(249,115,22,0.06); }
 
-        /* Avatar */
-        .avatar {
-          width: 34px; height: 34px;
-          border-radius: 10px;
-          background: linear-gradient(135deg, #F97316, #EA580C);
-          display: flex; align-items: center; justify-content: center;
-          font-size: 11.5px; font-weight: 700; color: white;
-          cursor: pointer;
-          letter-spacing: 0.04em;
-          font-family: 'DM Sans', sans-serif;
-          box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px rgba(249,115,22,0.2);
-          transition: box-shadow 0.2s;
+        .notif-panel {
+          position: absolute; top: calc(100% + 10px); right: 0;
+          width: 316px; background: white;
+          border: 1px solid var(--border); border-radius: 16px;
+          box-shadow: 0 20px 56px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.05);
+          animation: notifIn 0.2s cubic-bezier(.22,.68,0,1.2) both;
+          z-index: 300; overflow: hidden;
         }
-        .avatar:hover { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px rgba(249,115,22,0.4); }
+        .notif-item {
+          display: flex; align-items: flex-start; gap: 11px;
+          padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,0.04);
+          cursor: pointer; transition: background 0.1s;
+        }
+        .notif-item:hover { background: #F8FAFC; }
+        .notif-item:last-child { border-bottom: none; }
 
-        /* Search bar */
-        .search-wrap {
-          display: flex; align-items: center; gap: 8px;
-          padding: 7px 12px;
-          background: var(--surface2);
-          border: 1px solid var(--border);
-          border-radius: 10px;
-          transition: border-color 0.15s, box-shadow 0.15s;
-          cursor: text;
-          width: 200px;
-        }
-        .search-wrap.focused {
-          border-color: var(--accent);
-          box-shadow: 0 0 0 3px var(--accent-glow);
-          width: 240px;
-        }
-        .search-wrap input {
-          background: none; border: none; outline: none;
-          font-size: 13px; color: var(--text-1);
-          width: 100%; font-family: 'DM Sans', sans-serif;
-        }
-        .search-wrap input::placeholder { color: var(--text-3); }
-
-        /* Page fade */
-        .page-enter {
-          animation: pageIn 0.3s cubic-bezier(.22,.68,0,1.2) both;
-        }
-        @keyframes pageIn {
-          from { opacity: 0; transform: translateY(12px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Table styles */
-        .crm-table { width: 100%; font-size: 13.5px; border-collapse: collapse; font-family: 'DM Sans', sans-serif; }
+        .crm-table { width: 100%; border-collapse: collapse; font-size: 13.5px; font-family: 'Plus Jakarta Sans', sans-serif; }
         .crm-table th {
-          text-align: left; padding: 11px 18px;
-          font-size: 11px; font-weight: 600; color: var(--text-3);
-          letter-spacing: 0.08em; text-transform: uppercase;
-          border-bottom: 1px solid var(--border);
+          text-align: left; padding: 10px 16px;
+          font-size: 9.5px; font-weight: 800; color: var(--ink4);
+          letter-spacing: 0.12em; text-transform: uppercase;
+          border-bottom: 1px solid var(--border); background: #FAFAFA;
         }
-        .crm-table td { padding: 13px 18px; border-bottom: 1px solid var(--border); color: var(--text-1); vertical-align: middle; }
-        .crm-table tbody tr { transition: background 0.12s; }
-        .crm-table tbody tr:hover td { background: rgba(255,255,255,0.025); }
+        .crm-table td { padding: 13px 16px; border-bottom: 1px solid rgba(0,0,0,0.04); color: var(--ink); vertical-align: middle; }
+        .crm-table tbody tr { transition: background 0.1s; }
+        .crm-table tbody tr:hover td { background: rgba(249,115,22,0.025); }
         .crm-table tbody tr:last-child td { border-bottom: none; }
 
-        /* KPI */
-        .kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; margin-bottom: 24px; }
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px; margin-bottom: 28px; }
         .kpi-card {
-          background: var(--surface);
-          border: 1px solid var(--border);
-          border-radius: 14px;
-          padding: 20px 22px;
-          position: relative;
-          overflow: hidden;
-          transition: border-color 0.15s, transform 0.15s;
-          cursor: default;
+          background: white; border: 1px solid var(--border);
+          border-radius: var(--radius-lg); padding: 24px 22px;
+          position: relative; overflow: hidden;
+          transition: all 0.2s; cursor: default;
+          box-shadow: 0 1px 4px rgba(0,0,0,0.04);
         }
-        .kpi-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
-        .kpi-card::before {
-          content: '';
-          position: absolute;
-          top: 0; right: 0;
-          width: 80px; height: 80px;
-          border-radius: 50%;
-          background: var(--accent-dim);
-          transform: translate(30px, -30px);
-          pointer-events: none;
-        }
-        .kpi-label { font-size: 11px; font-weight: 600; color: var(--text-3); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 10px; }
-        .kpi-value { font-size: 30px; font-weight: 700; color: var(--text-1); line-height: 1; font-family: 'Playfair Display', Georgia, serif; }
-        .kpi-trend { font-size: 11.5px; margin-top: 8px; display: flex; align-items: center; gap: 4px; }
+        .kpi-card:hover { border-color: rgba(249,115,22,0.2); transform: translateY(-3px); box-shadow: 0 12px 32px rgba(249,115,22,0.07), 0 2px 8px rgba(0,0,0,0.04); }
+        .kpi-label { font-size: 9.5px; font-weight: 800; color: var(--ink4); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 12px; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .kpi-value { font-size: 38px; font-weight: 700; color: var(--ink); line-height: 1; font-family: 'Fraunces', Georgia, serif; letter-spacing: -0.03em; }
+        .kpi-trend { font-size: 11px; margin-top: 11px; display: flex; align-items: center; gap: 6px; }
 
-        /* Badges */
-        .badge {
-          display: inline-flex; align-items: center; gap: 4px;
-          padding: 3px 10px; border-radius: 20px;
-          font-size: 11px; font-weight: 600; letter-spacing: 0.02em;
-        }
-        .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; display: block; }
-        .badge-green  { background: rgba(16,185,129,0.12); color: #34D399; }
-        .badge-orange { background: rgba(249,115,22,0.12); color: #FB923C; }
-        .badge-yellow { background: rgba(245,158,11,0.12); color: #FCD34D; }
-        .badge-red    { background: rgba(239,68,68,0.12); color: #F87171; }
-        .badge-gray   { background: rgba(161,161,170,0.12); color: #A1A1AA; }
+        .badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+        .badge-green  { background: rgba(16,185,129,0.08);  color: #059669; border: 1px solid rgba(16,185,129,0.15); }
+        .badge-orange { background: rgba(249,115,22,0.08);  color: #C2530A; border: 1px solid rgba(249,115,22,0.15); }
+        .badge-yellow { background: rgba(217,119,6,0.08);   color: #D97706; border: 1px solid rgba(217,119,6,0.15); }
+        .badge-red    { background: rgba(220,38,38,0.08);   color: #DC2626; border: 1px solid rgba(220,38,38,0.15); }
+        .badge-gray   { background: rgba(0,0,0,0.04);       color: #64748B; border: 1px solid rgba(0,0,0,0.07); }
+        .badge-blue   { background: rgba(37,99,235,0.08);   color: #2563EB; border: 1px solid rgba(37,99,235,0.14); }
 
-        /* Progress */
-        .progress-wrap { display: flex; align-items: center; gap: 9px; }
-        .progress-track { flex: 1; height: 4px; background: var(--surface3); border-radius: 10px; overflow: hidden; }
-        .progress-fill {
-          height: 4px; border-radius: 10px;
-          background: linear-gradient(90deg, #F97316, #FF6B35);
-          transition: width 0.5s cubic-bezier(.22,.68,0,1);
-        }
+        .progress-wrap { display: flex; align-items: center; gap: 10px; }
+        .progress-track { flex: 1; height: 5px; background: var(--surface3); border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 5px; border-radius: 10px; background: linear-gradient(90deg, #F97316, #FDBA74); transition: width 0.6s cubic-bezier(.22,.68,0,1); }
 
-        /* Btns */
-        .btn {
-          padding: 7px 14px; font-size: 12.5px; font-weight: 500;
-          border-radius: 9px; cursor: pointer;
-          border: 1px solid var(--border);
-          background: var(--surface2); color: var(--text-2);
-          transition: all 0.15s; font-family: 'DM Sans', sans-serif;
-        }
-        .btn:hover { border-color: var(--border-hover); color: var(--text-1); background: var(--surface3); }
+        .btn { padding: 7px 15px; font-size: 12.5px; font-weight: 600; border-radius: var(--radius-sm); cursor: pointer; border: 1px solid var(--border); background: white; color: var(--ink2); transition: all 0.15s; font-family: 'Plus Jakarta Sans', sans-serif; display: inline-flex; align-items: center; gap: 6px; }
+        .btn:hover { border-color: #CBD5E1; color: var(--ink); background: var(--surface3); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 
-        .btn-primary {
-          display: inline-flex; align-items: center; gap: 6px;
-          background: var(--accent); color: white; border: none;
-          padding: 9px 18px; font-size: 13px; font-weight: 600;
-          border-radius: 10px; cursor: pointer;
-          font-family: 'DM Sans', sans-serif;
-          transition: all 0.15s;
-          box-shadow: 0 4px 16px var(--accent-glow);
-        }
-        .btn-primary:hover { background: #EA580C; transform: translateY(-1px); box-shadow: 0 6px 22px rgba(249,115,22,0.4); }
+        .btn-primary { display: inline-flex; align-items: center; gap: 7px; background: var(--accent); color: white; border: none; padding: 10px 24px; font-size: 13px; font-weight: 700; border-radius: 100px; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.18s; box-shadow: 0 4px 16px rgba(249,115,22,0.3); }
+        .btn-primary:hover { background: var(--accent-b); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(249,115,22,0.38); }
         .btn-primary:active { transform: translateY(0); }
 
-        /* Card */
-        .crm-card {
-          background: var(--surface);
-          border-radius: 16px;
-          border: 1px solid var(--border);
-          overflow: hidden;
-          margin-bottom: 20px;
-        }
-        .crm-card-header {
-          padding: 15px 20px;
-          border-bottom: 1px solid var(--border);
-          display: flex; align-items: center; justify-content: space-between;
-        }
-        .crm-card-title {
-          font-size: 14px; font-weight: 700; color: var(--text-1);
-          font-family: 'Playfair Display', Georgia, serif;
-        }
+        .btn-dark { display: inline-flex; align-items: center; gap: 7px; background: var(--ink); color: white; border: none; padding: 10px 24px; font-size: 13px; font-weight: 700; border-radius: 100px; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.18s; box-shadow: 0 4px 14px rgba(15,23,42,0.18); }
+        .btn-dark:hover { background: #1E293B; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15,23,42,0.25); }
 
-        /* Filter */
-        .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 18px; }
-        .crm-select {
-          padding: 7px 12px; font-size: 13px;
-          border: 1px solid var(--border); border-radius: 9px;
-          background: var(--surface2); color: var(--text-1);
-          font-family: 'DM Sans', sans-serif; outline: none;
-          transition: border-color 0.15s;
-          cursor: pointer;
-        }
-        .crm-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+        .crm-card { background: white; border-radius: var(--radius-lg); border: 1px solid var(--border); overflow: hidden; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); transition: box-shadow 0.2s; }
+        .crm-card:hover { box-shadow: 0 4px 18px rgba(0,0,0,0.06); }
+        .crm-card-header { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: #FAFAFA; }
+        .crm-card-title { font-size: 13.5px; font-weight: 700; color: var(--ink); font-family: 'Plus Jakarta Sans', sans-serif; }
 
-        /* Avatar sm */
-        .avatar-sm {
-          width: 28px; height: 28px; border-radius: 8px;
-          display: flex; align-items: center; justify-content: center;
-          font-size: 9.5px; font-weight: 700; color: white;
-          font-family: 'DM Sans', sans-serif; letter-spacing: 0.04em;
-          flex-shrink: 0;
-        }
+        .crm-select { padding: 7px 13px; font-size: 12.5px; border: 1px solid var(--border); border-radius: 100px; background: white; color: var(--ink); font-family: 'Plus Jakarta Sans', sans-serif; outline: none; transition: all 0.15s; cursor: pointer; font-weight: 500; }
+        .crm-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(249,115,22,0.12); }
 
-        /* Tabs */
-        .page-tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
-        .page-tab {
-          padding: 9px 16px; font-size: 13px; font-weight: 500;
-          color: var(--text-3); cursor: pointer; border: none;
-          background: none; border-bottom: 2px solid transparent;
-          margin-bottom: -1px; transition: all 0.15s;
-          font-family: 'DM Sans', sans-serif;
-        }
-        .page-tab:hover { color: var(--text-2); }
-        .page-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+        .page-tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+        .page-tab { padding: 10px 17px; font-size: 13px; font-weight: 600; color: var(--ink4); cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .page-tab:hover { color: var(--ink3); }
+        .page-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-        /* Modal */
-        .modal-overlay {
-          position: fixed; inset: 0;
-          background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
-          display: flex; align-items: center; justify-content: center;
-          z-index: 200; animation: fadeIn 0.15s ease;
-        }
-        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
-        .modal-box {
-          background: var(--surface); border-radius: 20px;
-          padding: 28px; width: 100%; max-width: 440px;
-          border: 1px solid var(--border);
-          box-shadow: 0 24px 64px rgba(0,0,0,0.5);
-          animation: slideUp 0.22s cubic-bezier(.22,.68,0,1.2);
-        }
-        @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
-        .modal-title { font-size: 17px; font-weight: 700; color: var(--text-1); font-family: 'Playfair Display', Georgia, serif; margin-bottom: 20px; }
-        .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
-        .form-field { margin-bottom: 14px; }
-        .form-label { display: block; font-size: 11.5px; font-weight: 600; color: var(--text-3); margin-bottom: 6px; letter-spacing: 0.04em; text-transform: uppercase; }
-        .form-control {
-          width: 100%; padding: 10px 13px; font-size: 13.5px;
-          border: 1px solid var(--border); border-radius: 10px;
-          background: var(--surface2); color: var(--text-1);
-          font-family: 'DM Sans', sans-serif; outline: none;
-          transition: border-color 0.15s, box-shadow 0.15s;
-        }
-        .form-control:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
-        .form-control::placeholder { color: var(--text-3); }
-        textarea.form-control { resize: vertical; min-height: 80px; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.4); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 200; animation: fadeIn 0.15s ease; }
+        .modal-box { background: white; border-radius: 20px; padding: 30px; width: 100%; max-width: 460px; border: 1px solid var(--border); box-shadow: 0 32px 80px rgba(0,0,0,0.14); animation: slideUp 0.24s cubic-bezier(.22,.68,0,1.2); }
+        .modal-title { font-size: 20px; font-weight: 700; font-family: 'Fraunces', Georgia, serif; color: var(--ink); margin-bottom: 22px; letter-spacing: -0.02em; }
+        .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border); }
+        .form-field { margin-bottom: 15px; }
+        .form-label { display: block; font-size: 10px; font-weight: 800; color: var(--ink4); margin-bottom: 7px; letter-spacing: 0.1em; text-transform: uppercase; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .form-control { width: 100%; padding: 10px 14px; font-size: 13.5px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface3); color: var(--ink); font-family: 'Plus Jakarta Sans', sans-serif; outline: none; transition: all 0.15s; }
+        .form-control:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(249,115,22,0.12); background: white; }
+        .form-control::placeholder { color: var(--ink5); }
 
-        /* Notif dot */
-        .notif-pip {
-          position: absolute; top: 7px; right: 7px;
-          width: 7px; height: 7px; border-radius: 50%;
-          background: var(--accent); border: 1.5px solid var(--surface);
-        }
-
-        /* Divider */
-        .vdivider { width: 1px; height: 22px; background: var(--border); }
-
-        /* Stagger animation children */
-        .stagger > * { animation: pageIn 0.35s cubic-bezier(.22,.68,0,1.2) both; }
+        .stagger > * { animation: pageIn 0.4s cubic-bezier(.22,.68,0,1.2) both; }
         .stagger > *:nth-child(1) { animation-delay: 0.04s; }
         .stagger > *:nth-child(2) { animation-delay: 0.08s; }
         .stagger > *:nth-child(3) { animation-delay: 0.12s; }
         .stagger > *:nth-child(4) { animation-delay: 0.16s; }
-        .stagger > *:nth-child(5) { animation-delay: 0.2s; }
+        .stagger > *:nth-child(5) { animation-delay: 0.20s; }
       `}</style>
 
-      {/* ── TOP NAVBAR ─────────────────────────────────────────── */}
+      {/* ══════════════════════════════════════
+          TOP NAVBAR
+      ══════════════════════════════════════ */}
       <nav style={{
-        background: "rgba(20,20,22,0.85)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
-        padding: "0 32px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        height: "60px",
-        position: "sticky",
-        top: 0,
-        zIndex: 50,
+        height: "76px",
+        background: "rgba(255,255,255,0.93)",
+        backdropFilter: "blur(24px) saturate(180%)",
+        WebkitBackdropFilter: "blur(24px) saturate(180%)",
+        borderBottom: "1px solid rgba(0,0,0,0.06)",
+        padding: "0 48px",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        position: "sticky", top: 0, zIndex: 100,
+        boxShadow: "0 1px 0 rgba(0,0,0,0.04), 0 4px 20px rgba(0,0,0,0.04)",
+        overflow: "hidden",
       }}>
+        {/* Accent bottom line */}
+        <div style={{
+          position: "absolute", bottom: 0, left: 0, right: 0, height: "2px",
+          background: "linear-gradient(90deg, #F97316 0%, #FDBA74 50%, transparent 100%)",
+          transformOrigin: "left",
+          animation: "accentLine 1s cubic-bezier(.22,.68,0,1) forwards",
+        }} />
 
-        {/* Brand */}
-        <div style={{ display: "flex", alignItems: "center", gap: "11px" }}>
-          <IconLogo />
-          <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
-            <span style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
-              fontWeight: 700,
-              fontSize: "16px",
-              color: "#F4F4F5",
-              letterSpacing: "-0.01em",
+        {/* LEFT — Brand + pills */}
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {/* Logo mark */}
+          <div style={{
+            width: "44px", height: "44px", borderRadius: "13px",
+            background: "#0F172A",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            flexShrink: 0, position: "relative", overflow: "hidden",
+          }}>
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "50%", background: "rgba(255,255,255,0.05)" }} />
+            <IconHeadset />
+          </div>
+
+          {/* Wordmark */}
+          <div style={{ paddingLeft: "18px", marginLeft: "18px", borderLeft: "1px solid #E2E8F0" }}>
+            <div style={{
+              fontFamily: "'Fraunces', Georgia, serif",
+              fontSize: "22px", fontWeight: 700,
+              color: "#0F172A", letterSpacing: "-0.03em", lineHeight: 1,
             }}>
-              CRM<span style={{ color: "#F97316" }}>Pro</span>
-            </span>
-            <span style={{ fontSize: "10px", color: "rgba(161,161,170,0.6)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-              Dashboard
-            </span>
+              VICI<span style={{ color: "#F97316", fontStyle: "italic", fontWeight: 100 }}>Elite</span>
+            </div>
+            <div style={{
+              fontSize: "9px", fontWeight: 800, color: "#94A3B8",
+              letterSpacing: "0.2em", textTransform: "uppercase",
+              marginTop: "4px", fontFamily: "'Plus Jakarta Sans', sans-serif",
+            }}>Call Center</div>
+          </div>
+
+          {/* Separator */}
+          <div style={{ width: "1px", height: "28px", background: "#E2E8F0", margin: "0 20px" }} />
+
+          {/* Stat pills */}
+          <div style={{ display: "flex", gap: "8px" }}>
+            {[
+              
+              { icon: <IconTarget />, value: "02", label: "campagnes", bg: "rgba(249,115,22,0.1)" },
+            ].map((p, i) => (
+              <div key={i} style={{
+                display: "flex", alignItems: "center", gap: "7px",
+                background: "#F8FAFC", border: "1px solid #E2E8F0",
+                padding: "5px 12px 5px 8px", borderRadius: "100px",
+              }}>
+                <div style={{
+                  width: "22px", height: "22px", borderRadius: "6px",
+                  background: p.bg,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}>{p.icon}</div>
+                <div>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", fontWeight: 500, color: "#0F172A", lineHeight: 1 }}>{p.value}</div>
+                  <div style={{ fontSize: "9px", fontWeight: 800, color: "#94A3B8", letterSpacing: "0.08em", textTransform: "uppercase", marginTop: "2px" }}>{p.label}</div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Search + Nav */}
-        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          <div
-            className={`search-wrap ${searchFocused ? "focused" : ""}`}
-            style={{ transition: "width 0.25s cubic-bezier(.22,.68,0,1), border-color 0.15s, box-shadow 0.15s" }}
-          >
+        {/* CENTER — Search */}
+        <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)" }}>
+          <div className={`search-box ${searchFocused ? "focused" : ""}`}>
             <IconSearch />
             <input
-              placeholder="Rechercher..."
+              placeholder="Rechercher clients, agents, campagnes…"
+              value={searchVal}
+              onChange={e => setSearchVal(e.target.value)}
               onFocus={() => setSearchFocused(true)}
               onBlur={() => setSearchFocused(false)}
             />
             {searchFocused && (
-              <span style={{ fontSize: "10px", color: "rgba(161,161,170,0.4)", whiteSpace: "nowrap", letterSpacing: "0.04em" }}>⌘K</span>
+              <span style={{
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: "10px", color: "#CBD5E1",
+                background: "#F1F5F9", padding: "2px 7px",
+                borderRadius: "5px", border: "1px solid #E2E8F0",
+                flexShrink: 0,
+              }}>⌘K</span>
+            )}
+          </div>
+        </div>
+
+        {/* RIGHT */}
+        <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+          {/* System badge */}
+          <div style={{
+            background: "#F1F5F9", border: "1px solid #E2E8F0",
+            padding: "5px 13px", borderRadius: "100px",
+            display: "flex", alignItems: "center", gap: "7px",
+            fontSize: "10px", fontWeight: 800, color: "#475569",
+            letterSpacing: "0.05em", fontFamily: "'Plus Jakarta Sans', sans-serif",
+          }}>
+            <div style={{
+              width: "7px", height: "7px", borderRadius: "50%",
+              background: "#10B981", boxShadow: "0 0 0 3px rgba(16,185,129,0.18)",
+              animation: "pulseDot 2s infinite", flexShrink: 0,
+            }} />
+            SYSTEM LIVE
+          </div>
+
+          <div style={{ width: "1px", height: "28px", background: "#E2E8F0" }} />
+
+          <LiveClock />
+
+          <button className="i-btn" title="Paramètres"><IconSettings /></button>
+
+          {/* Notifications */}
+          <div style={{ position: "relative" }}>
+            <button
+              className={`i-btn ${notifOpen ? "active" : ""}`}
+              onClick={() => setNotifOpen(o => !o)}
+            >
+              <div style={{
+                position: "absolute", top: "-3px", right: "-3px",
+                width: "8px", height: "8px", borderRadius: "50%",
+                background: "#F97316", border: "2px solid white",
+              }} />
+              <IconBell />
+            </button>
+
+            {notifOpen && (
+              <>
+                <div style={{ position: "fixed", inset: 0, zIndex: 299 }} onClick={() => setNotifOpen(false)} />
+                <div className="notif-panel">
+                  <div style={{ padding: "14px 16px 12px", borderBottom: "1px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: "13px", fontWeight: 700, color: "#0F172A", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Notifications</span>
+                    <span style={{ fontSize: "10px", fontWeight: 800, color: "#F97316", cursor: "pointer", letterSpacing: "0.04em", textTransform: "uppercase", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Tout marquer</span>
+                  </div>
+                  {[
+                    { bg: "#FEF2F2", label: "Appel manqué", sub: "Client #4821 — il y a 3 min", icon: "📞" },
+                    { bg: "#FFF7ED", label: "Rapport prêt", sub: "Campagne Été 2025 — il y a 12 min", icon: "📊" },
+                    { bg: "#F0FDF4", label: "Objectif atteint", sub: "Agent Karim: 98% satisfaction", icon: "✅" },
+                  ].map((n, i) => (
+                    <div key={i} className="notif-item">
+                      <div style={{ width: "32px", height: "32px", borderRadius: "9px", background: n.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px", flexShrink: 0 }}>{n.icon}</div>
+                      <div>
+                        <div style={{ fontSize: "12.5px", fontWeight: 600, color: "#0F172A", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{n.label}</div>
+                        <div style={{ fontSize: "11px", color: "#94A3B8", marginTop: "2px", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{n.sub}</div>
+                      </div>
+                    </div>
+                  ))}
+                  <div style={{ padding: "11px 16px", textAlign: "center", background: "#FAFAFA", borderTop: "1px solid #E2E8F0" }}>
+                    <span style={{ fontSize: "11.5px", fontWeight: 700, color: "#F97316", fontFamily: "'Plus Jakarta Sans', sans-serif", cursor: "pointer" }}>Voir toutes →</span>
+                  </div>
+                </div>
+              </>
             )}
           </div>
 
-          <div style={{ width: "1px", height: "22px", background: "rgba(255,255,255,0.06)", margin: "0 6px" }} />
-
-          {NAV_LINKS.map(({ to, label, icon: Icon }) => (
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) => `nav-item${isActive ? " active" : ""}`}
-            >
-              <Icon />
-              {label}
-              <span className="nav-dot" />
-            </NavLink>
-          ))}
-        </div>
-
-        {/* Right */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <button className="icon-btn" aria-label="Paramètres">
-            <IconSettings />
-          </button>
-          <button className="icon-btn" aria-label="Notifications">
-            <div className="notif-pip" />
-            <IconBell />
-          </button>
-          <div className="vdivider" />
-          <div className="avatar">MG</div>
-          <div style={{ lineHeight: 1.3 }}>
-            <p style={{ fontSize: "13px", fontWeight: 600, color: "#F4F4F5" }}>Manager</p>
-            <p style={{ fontSize: "10.5px", color: "#10B981", display: "flex", alignItems: "center", gap: "4px" }}>
-              <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: "#10B981", display: "inline-block" }} />
-              En ligne
-            </p>
+          {/* User pill */}
+          <div style={{
+            background: "#0F172A", color: "white",
+            padding: "5px 5px 5px 16px", borderRadius: "100px",
+            display: "flex", alignItems: "center", gap: "11px",
+            boxShadow: "0 8px 20px rgba(15,23,42,0.15)",
+          }}>
+            <span style={{ fontSize: "12.5px", fontWeight: 600, letterSpacing: "-0.01em", whiteSpace: "nowrap", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>A. Dabbebi</span>
+            <div style={{
+              width: "34px", height: "34px", borderRadius: "50%",
+              background: "linear-gradient(135deg, #F97316, #FB923C)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: "11px", fontWeight: 800, color: "white",
+              letterSpacing: "0.05em", flexShrink: 0,
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+            }}>AD</div>
           </div>
         </div>
       </nav>
 
-      {/* ── BREADCRUMB ──────────────────────────────────────────── */}
+      {/* ══════════════════════════════════════
+          SUBBAR
+      ══════════════════════════════════════ */}
       <div style={{
-        background: "rgba(20,20,22,0.6)",
-        borderBottom: "1px solid rgba(255,255,255,0.04)",
-        padding: "8px 32px",
-        display: "flex",
-        alignItems: "center",
-        gap: "8px",
+        height: "38px",
+        background: "rgba(255,255,255,0.7)",
+        backdropFilter: "blur(12px)",
+        borderBottom: "1px solid rgba(0,0,0,0.055)",
+        padding: "0 48px",
+        display: "flex", alignItems: "center", gap: "7px",
       }}>
-        <span style={{ fontSize: "11.5px", color: "#52525B" }}>CRMPro</span>
-        <span style={{ fontSize: "11.5px", color: "#3F3F46" }}>
-          <IconChevron />
-        </span>
-        <span style={{
-          fontSize: "11.5px",
-          fontWeight: 600,
-          color: "#F97316",
-          display: "flex",
-          alignItems: "center",
-          gap: "5px",
-        }}>
-          {pageTitle}
-        </span>
-
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "6px" }}>
-          <span style={{
-            width: "6px", height: "6px", borderRadius: "50%",
-            background: "#10B981",
-            boxShadow: "0 0 6px rgba(16,185,129,0.5)",
-            display: "inline-block",
-          }} />
-          <span style={{ fontSize: "11px", color: "#52525B" }}>Système opérationnel</span>
+        <span style={{ fontSize: "11px", fontWeight: 700, color: "#CBD5E1", letterSpacing: "0.04em", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>VICIElite</span>
+        <IconChevron />
+        <span style={{ fontSize: "11px", fontWeight: 800, color: "#F97316", letterSpacing: "0.04em", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{pageTitle}</span>
+        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "14px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#10B981", boxShadow: "0 0 0 2px rgba(16,185,129,0.2)" }} />
+            <span style={{ fontSize: "10.5px", color: "#64748B", fontWeight: 600, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Système opérationnel</span>
+          </div>
+          <div style={{ height: "13px", width: "1px", background: "#E2E8F0" }} />
+          <div style={{ height: "13px", width: "1px", background: "#E2E8F0" }} />
+          <span style={{ fontSize: "9px", fontWeight: 800, color: "#CBD5E1", letterSpacing: "0.12em", textTransform: "uppercase", background: "#F1F5F9", padding: "2px 8px", borderRadius: "20px", border: "1px solid #E2E8F0", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>v1.0.0</span>
         </div>
       </div>
 
-      {/* ── PAGE CONTENT ─────────────────────────────────────────── */}
+      {/* ══════════════════════════════════════
+          PAGE CONTENT
+      ══════════════════════════════════════ */}
       <main
         key={location.pathname}
-        className="page-enter"
-        style={{ padding: "30px 32px", maxWidth: "1400px", width: "100%", margin: "0 auto", flex: 1 }}
+        className="page-in"
+        style={{
+          padding: "36px 48px", flex: 1,
+          background: "#F8FAFC",
+          backgroundImage: "radial-gradient(at 100% 0%, rgba(249,115,22,0.025) 0%, transparent 50%)",
+        }}
       >
         <Outlet />
       </main>
+
+      {/* ══════════════════════════════════════
+          FOOTER
+      ══════════════════════════════════════ */}
+      <footer style={{
+        background: "#0F172A",
+        borderTop: "1px solid rgba(255,255,255,0.05)",
+        padding: "16px 48px",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <div style={{ width: "28px", height: "28px", borderRadius: "8px", background: "linear-gradient(135deg, #F97316, #EA580C)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <IconHeadset />
+          </div>
+          <span style={{ fontSize: "12px", color: "#334155", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 500 }}>VICIElite — Control Center Platform</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+          {["Support", "Documentation", "Changelog"].map((link, i) => (
+            <span key={i}
+              style={{ fontSize: "11px", color: "#1E293B", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 500, cursor: "pointer", transition: "color 0.15s" }}
+              onMouseEnter={e => e.target.style.color = "#F97316"}
+              onMouseLeave={e => e.target.style.color = "#1E293B"}
+            >{link}</span>
+          ))}
+          <div style={{ height: "12px", width: "1px", background: "rgba(255,255,255,0.06)" }} />
+          <span style={{ fontSize: "11px", color: "#1E293B", fontFamily: "'JetBrains Mono', monospace" }}>© 2025 VICIElite</span>
+        </div>
+      </footer>
     </div>
   );
 }
 
-/* ─────────────────────────────────────────────
-   EXPORTS UTILITAIRES — utilisables dans les pages filles
-──────────────────────────────────────────────── */
+/* ══════════════════════════════════════
+   EXPORTED COMPONENTS
+══════════════════════════════════════ */
 
 export function PageHeader({ title, subtitle, action }) {
   return (
-    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "26px" }}>
+    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "28px" }}>
       <div>
         <h1 style={{
-          fontSize: "24px", fontWeight: 700, color: "#F4F4F5",
-          fontFamily: "'Playfair Display', Georgia, serif",
-          letterSpacing: "-0.01em", marginBottom: "4px",
+          fontFamily: "'Fraunces', Georgia, serif",
+          fontSize: "30px", fontWeight: 700,
+          color: "#0F172A", letterSpacing: "-0.03em",
+          marginBottom: "5px", lineHeight: 1.15,
         }}>{title}</h1>
-        {subtitle && <p style={{ fontSize: "13px", color: "#71717A" }}>{subtitle}</p>}
+        {subtitle && (
+          <p style={{ fontSize: "13.5px", color: "#64748B", fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 400 }}>{subtitle}</p>
+        )}
       </div>
       {action}
     </div>
   );
 }
 
-export function KpiCard({ label, value, trend, trendUp, color = "#F97316" }) {
+export function KpiCard({ label, value, trend, trendUp, color = "#0F172A" }) {
   return (
     <div className="kpi-card">
+      <div style={{
+        position: "absolute", top: "16px", right: "18px",
+        width: "8px", height: "8px", borderRadius: "50%",
+        background: trendUp ? "#10B981" : "#F97316",
+        boxShadow: `0 0 0 3px ${trendUp ? "rgba(16,185,129,0.15)" : "rgba(249,115,22,0.15)"}`,
+      }} />
       <div className="kpi-label">{label}</div>
       <div className="kpi-value" style={{ color }}>{value}</div>
       {trend && (
-        <div className="kpi-trend" style={{ color: trendUp ? "#34D399" : "#F87171" }}>
-          {trendUp ? "↑" : "↓"} {trend}
+        <div className="kpi-trend">
+          <span style={{
+            background: trendUp ? "rgba(16,185,129,0.08)" : "rgba(220,38,38,0.08)",
+            color: trendUp ? "#059669" : "#DC2626",
+            padding: "2px 9px", borderRadius: "100px",
+            fontSize: "11px", fontWeight: 700,
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            border: `1px solid ${trendUp ? "rgba(16,185,129,0.15)" : "rgba(220,38,38,0.15)"}`,
+          }}>
+            {trendUp ? "↑" : "↓"} {trend}
+          </span>
         </div>
       )}
     </div>
@@ -578,7 +604,7 @@ export function ProgressBar({ value }) {
       <div className="progress-track">
         <div className="progress-fill" style={{ width: `${value}%` }} />
       </div>
-      <span style={{ fontSize: "11.5px", color: "#71717A", minWidth: "30px" }}>{value}%</span>
+      <span style={{ fontSize: "11px", color: "#94A3B8", minWidth: "34px", fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>{value}%</span>
     </div>
   );
 }

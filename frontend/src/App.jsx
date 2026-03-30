@@ -15,8 +15,7 @@ export default function App() {
         {/* Toutes les autres pages avec le Layout */}
         <Route element={<Layout />}>
           <Route path="/agent" element={<Agent />} />
-          <Route path="/" element={<Navigate to="/login" replace />} />{" "}
-          {/* redirige vers login */}
+          <Route path="/" element={<Navigate to="/Login" replace />} />{" "}
           <Route path="/manager" element={<Manager />} />
           <Route path="/admin" element={<Admin />} />
         </Route>

@@ -1,14 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { 
-  Layout, Row, Col, Card as AntCard, Progress, List, Divider, Space, Statistic, Dropdown, Timeline, Badge, Tooltip, message
+import {
+  Layout,
+  Row,
+  Col,
+  Card as AntCard,
+  Progress,
+  List,
+  Divider,
+  Space,
+  Statistic,
+  Dropdown,
+  Timeline,
+  Badge,
+  Tooltip,
+  message,
 } from "antd";
-import { 
-  PhoneOutlined, 
-  UserOutlined, 
+import {
+  PhoneOutlined,
+  UserOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
   RiseOutlined,
-  TeamOutlined
+  TeamOutlined,
 } from "@ant-design/icons";
 import Softphone from "../components/Softphone";
 import ClientCard from "../components/ClientCard";
@@ -23,7 +36,7 @@ export default function Dashboard() {
     callsToday: 0,
     avgCallDuration: 0,
     successRate: 0,
-    waitingCalls: 0
+    waitingCalls: 0,
   });
   const [lastUpdate, setLastUpdate] = useState(new Date());
 
@@ -34,7 +47,7 @@ export default function Dashboard() {
         callsToday: Math.floor(Math.random() * 50 + 20),
         avgCallDuration: Math.floor(Math.random() * 300 + 120),
         successRate: Math.floor(Math.random() * 30 + 60),
-        waitingCalls: Math.floor(Math.random() * 5)
+        waitingCalls: Math.floor(Math.random() * 5),
       });
       setLastUpdate(new Date());
     }, 5000);
@@ -66,7 +79,11 @@ export default function Dashboard() {
                   prefix={<PhoneOutlined />}
                   valueStyle={{ color: "#00c6fb" }}
                 />
-                <Badge status="processing" text="en temps réel" style={{ marginTop: 8 }} />
+                <Badge
+                  status="processing"
+                  text="en temps réel"
+                  style={{ marginTop: 8 }}
+                />
               </AntCard>
             </Col>
             <Col span={6}>
@@ -86,12 +103,14 @@ export default function Dashboard() {
                   value={stats.successRate}
                   suffix="%"
                   prefix={<RiseOutlined />}
-                  valueStyle={{ color: stats.successRate > 70 ? "#52c41a" : "#faad14" }}
+                  valueStyle={{
+                    color: stats.successRate > 70 ? "#52c41a" : "#faad14",
+                  }}
                 />
                 <Tooltip title="Objectif: 75%">
-                  <Progress 
-                    percent={stats.successRate} 
-                    size="small" 
+                  <Progress
+                    percent={stats.successRate}
+                    size="small"
                     showInfo={false}
                     strokeColor={stats.successRate > 70 ? "#52c41a" : "#faad14"}
                   />
@@ -104,10 +123,15 @@ export default function Dashboard() {
                   title="En attente"
                   value={stats.waitingCalls}
                   prefix={<TeamOutlined />}
-                  valueStyle={{ color: stats.waitingCalls > 0 ? "#ff4d4f" : "#52c41a" }}
+                  valueStyle={{
+                    color: stats.waitingCalls > 0 ? "#ff4d4f" : "#52c41a",
+                  }}
                 />
                 {stats.waitingCalls > 0 && (
-                  <Badge count={`${stats.waitingCalls} en attente`} style={{ backgroundColor: "#ff4d4f", marginTop: 8 }} />
+                  <Badge
+                    count={`${stats.waitingCalls} en attente`}
+                    style={{ backgroundColor: "#ff4d4f", marginTop: 8 }}
+                  />
                 )}
               </AntCard>
             </Col>
@@ -133,7 +157,9 @@ export default function Dashboard() {
           animate={{ opacity: 0.6 }}
           style={styles.updateIndicator}
         >
-          <Tooltip title={`Dernière mise à jour: ${lastUpdate.toLocaleTimeString()}`}>
+          <Tooltip
+            title={`Dernière mise à jour: ${lastUpdate.toLocaleTimeString()}`}
+          >
             <Badge status="processing" text="Données en temps réel" />
           </Tooltip>
         </motion.div>
@@ -163,18 +189,18 @@ const styles = {
   layout: {
     height: "100vh",
     background: "#f0f2f5",
-    overflow: "hidden"
+    overflow: "hidden",
   },
   content: {
     padding: "20px",
     overflow: "auto",
-    position: "relative"
+    position: "relative",
   },
   statCard: {
     borderRadius: 16,
     boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
     transition: "all 0.3s",
-    cursor: "pointer"
+    cursor: "pointer",
   },
   updateIndicator: {
     position: "fixed",
@@ -184,6 +210,6 @@ const styles = {
     padding: "4px 12px",
     borderRadius: 20,
     boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-    zIndex: 1000
-  }
+    zIndex: 1000,
+  },
 };

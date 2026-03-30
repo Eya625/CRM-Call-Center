@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import Manager from "./pages/manager";
@@ -17,13 +17,3 @@ export default function App() {
     </BrowserRouter>
   );
 }
-=======
-import React from "react";
-import AppRouter from "./routes/AppRouter";
-
-function App() {
-  return <AppRouter />;
-}
-
-export default App;
->>>>>>> e341b5ec (Mise à jour du dialplan Asterisk et configuration PJSIP/1002)

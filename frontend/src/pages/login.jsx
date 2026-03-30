@@ -60,7 +60,7 @@ export default function Login() {
         duration: 3,
       });
 
-      setTimeout(() => navigate("/dashboard"), 500);
+      setTimeout(() => navigate("/agent"), 500);
     } catch (err) {
       console.error(err);
       message.error(err.response?.data?.error || "Échec de la connexion");

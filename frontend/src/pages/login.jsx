@@ -36,37 +36,59 @@ export default function Login() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      message.error("Please enter your email and password");
-      return;
+
+const handleLogin = async () => {
+  if (!email || !password) {
+    message.error("Please enter your email and password");
+    return;
+  }
+
+  setLoading(true);
+
+  // Petite animation pour UX
+  await new Promise((resolve) => setTimeout(resolve, 1500));
+
+  try {
+    // 🔹 Appel API existante
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_URL}/auth/login`,
+      { email, password }
+    );
+
+    const user = res.data;
+
+    // 🔹 Mettre l'utilisateur dans le state
+    setUser(user);
+
+    // 🔹 Stocker l'utilisateur pour session persistante
+    localStorage.setItem("user", JSON.stringify(user));
+
+    // 🔹 Message succès
+    message.success({
+      content: "Login successful! Welcome to the call center 📞",
+      icon: <CustomerServiceOutlined />,
+      duration: 3,
+    });
+
+    // 🔹 Redirection intelligente selon rôle
+    if (user.role === "agent") {
+      navigate("/agent");
+    } else if (user.role === "manager") {
+      navigate("/manager");
+    } else {
+      navigate("/"); // fallback si rôle inconnu
     }
 
-    setLoading(true);
+  } catch (err) {
+    console.error(err);
 
-    // Animation de connexion
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/auth/login`,
-        { email, password },
-      );
-
-      setUser(res.data);
-      message.success({
-        content: "Login successful! Welcome to the call center 📞",
-        icon: <CustomerServiceOutlined />,
-        duration: 3,
-      });
-
-      setTimeout(() => navigate("/agent"), 500);
-    } catch (err) {
-      console.error(err);
-      message.error(err.response?.data?.error || "Login failed");
-      setLoading(false);
-    }
-  };
+    // 🔹 Message erreur propre
+    message.error(err.response?.data?.error || "Login failed");
+  } finally {
+    // 🔹 Toujours désactiver le loading
+    setLoading(false);
+  }
+};
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {

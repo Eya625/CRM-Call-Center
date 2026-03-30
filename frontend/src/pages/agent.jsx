@@ -13,7 +13,7 @@ import {
 import Softphone from "../components/Softphone";
 import ClientCard from "../components/ClientCard";
 import CallScript from "../components/CallScript";
-import TopBar from "../components/TopBar";
+import Layout from "../components/Layout";
 import { motion, AnimatePresence } from "framer-motion";
 
 const { Content } = Layout;
@@ -49,7 +49,7 @@ export default function Dashboard() {
 
   return (
     <Layout style={styles.layout}>
-      <TopBar />
+      <Layout />
       <Content style={styles.content}>
         {/* Statistiques en temps réel */}
         <motion.div

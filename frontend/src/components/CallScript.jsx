@@ -69,7 +69,7 @@ export default function CallScript() {
         title={
           <Space>
             <SoundOutlined style={{ color: "#f97316" }} />
-            <Title level={4} style={{ margin: 0, color: "#1a1a1a" }}>Script d'appel intelligent</Title>
+            <Title level={4} style={{ margin: 0, color: "#1a1a1a" }}>Smart Call Script</Title>
           </Space>
         }
         style={styles.card}
@@ -79,7 +79,7 @@ export default function CallScript() {
           {/* Progression */}
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-              <Text type="secondary" style={{ color: "#666" }}>Étape {currentScriptIndex + 1}/{scripts.length}</Text>
+              <Text type="secondary" style={{ color: "#666" }}> {currentScriptIndex + 1}/{scripts.length}</Text>
               <Text type="secondary" style={{ color: "#666" }}>{Math.round((currentScriptIndex + 1) / scripts.length * 100)}%</Text>
             </div>
             <Progress 

@@ -35,7 +35,7 @@ export default function Softphone() {
       if (!inCall && status === "Available" && Math.random() > 0.7) {
         const fakeNumber = `+216 ${Math.floor(Math.random() * 90000000 + 10000000)}`;
         setIncomingCall(fakeNumber);
-        message.info(`Appel entrant de ${fakeNumber}`, 5);
+        message.info(`Incoming call from ${fakeNumber}`, 5);
       }
     }, 15000);
     return () => clearInterval(interval);
@@ -61,12 +61,12 @@ export default function Softphone() {
 
   const handleStartCall = () => {
     if (!currentNumber) {
-      message.warning("Veuillez entrer un numéro de téléphone");
+      message.warning("Please enter a phone number");
       return;
     }
     setInCall(true);
     setIncomingCall(null);
-    message.success(`Appel en cours vers ${currentNumber}`);
+    message.success(`Calling ${currentNumber}`);
   };
 
   const handleEndCall = () => {
@@ -81,19 +81,19 @@ export default function Softphone() {
     setIsMuted(false);
     setIsOnHold(false);
     setCurrentNumber("");
-    message.info(`Appel terminé. Durée: ${formatTime(callDuration)}`);
+    message.info(`Call ended. Duration: ${formatTime(callDuration)}`);
   };
 
   const handleAcceptCall = () => {
     setCurrentNumber(incomingCall);
     setInCall(true);
     setIncomingCall(null);
-    message.success("Appel accepté");
+    message.success("Call accepted");
   };
 
   const handleRejectCall = () => {
     setIncomingCall(null);
-    message.warning("Appel rejeté");
+    message.warning("Call rejected");
   };
 
   const statusColor = {
@@ -137,17 +137,17 @@ export default function Softphone() {
               animate={statusAnimation[status]}
               style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
             >
-              <Text strong style={{ color: "#1a1a1a" }}>Statut Agent:</Text>
+              <Text strong style={{ color: "#1a1a1a" }}>Agent Status:</Text>
               <Select
                 value={status}
                 onChange={setStatus}
                 style={{ width: 150 }}
                 dropdownStyle={{ borderRadius: 12 }}
               >
-                <Option value="Available"><Badge status="success" /> Disponible</Option>
-                <Option value="On Call"><Badge status="processing" /> En appel</Option>
-                <Option value="Paused"><Badge status="error" /> En pause</Option>
-                <Option value="Wrap-up"><Badge status="warning" /> Post-appel</Option>
+                <Option value="Available"><Badge status="success" /> Available </Option>
+                <Option value="On Call"><Badge status="processing" /> On Call</Option>
+                <Option value="Paused"><Badge status="error" /> Paused</Option>
+                <Option value="Wrap-up"><Badge status="warning" /> Wrap-up</Option>
               </Select>
             </motion.div>
 
@@ -160,16 +160,16 @@ export default function Softphone() {
                   exit={{ opacity: 0, height: 0 }}
                 >
                   <Select
-                    placeholder="Motif de la pause"
+                    placeholder="Pause Reason"
                     style={{ width: "100%" }}
                     value={pauseReason}
                     onChange={setPauseReason}
                   >
-                    <Option value="Coffee Break">☕ Pause café</Option>
-                    <Option value="Lunch">🍱 Pause déjeuner</Option>
-                    <Option value="Training">📚 Formation</Option>
-                    <Option value="Meeting">👥 Réunion</Option>
-                    <Option value="Technical Issue">🔧 Problème technique</Option>
+                    <Option value="Coffee Break">☕ Coffee Break</Option>
+                    <Option value="Lunch">🍱 Lunch Break</Option>
+                    <Option value="Training">📚 Training</Option>
+                    <Option value="Meeting">👥 Meeting</Option>
+                    <Option value="Technical Issue">🔧 Technical Issue</Option>
                   </Select>
                 </motion.div>
               )}
@@ -181,7 +181,7 @@ export default function Softphone() {
               style={styles.callInfo}
             >
               <div>
-                <Text type="secondary" style={{ color: "#666" }}>Numéro appelé</Text>
+                <Text type="secondary" style={{ color: "#666" }}>Called Number</Text>
                 <InputNumber
                   value={currentNumber}
                   onChange={setCurrentNumber}
@@ -216,7 +216,7 @@ export default function Softphone() {
                   strokeWidth={8}
                 />
                 <div style={{ display: "flex", justifyContent: "space-between", marginTop: 5 }}>
-                  <Text type="secondary" style={{ fontSize: 11, color: "#666" }}>Début</Text>
+                  <Text type="secondary" style={{ fontSize: 11, color: "#666" }}>Start</Text>
                   <Text type="secondary" style={{ fontSize: 11, color: "#666" }}>5 min</Text>
                 </div>
               </motion.div>
@@ -224,7 +224,7 @@ export default function Softphone() {
 
             {/* Boutons de contrôle */}
             <Space wrap style={{ display: "flex", justifyContent: "space-between" }}>
-              <Tooltip title="Couper le micro">
+              <Tooltip title="Mute Microphone">
                 <Button
                   type={isMuted ? "primary" : "default"}
                   danger={isMuted}
@@ -234,11 +234,11 @@ export default function Softphone() {
                   style={styles.controlButton}
                   className={isMuted ? "orange-button" : ""}
                 >
-                  {isMuted ? "Micro coupé" : "Mute"}
+                  {isMuted ? "Microphone Off" : "Mute"}
                 </Button>
               </Tooltip>
 
-              <Tooltip title="Mettre en attente">
+              <Tooltip title="Put on Hold">
                 <Button
                   type={isOnHold ? "primary" : "default"}
                   icon={<PauseCircleOutlined />}
@@ -267,7 +267,7 @@ export default function Softphone() {
                   onClick={() => setShowHistory(true)}
                   style={styles.controlButton}
                 >
-                  Historique
+                  History
                 </Button>
               </Tooltip>
 
@@ -279,7 +279,7 @@ export default function Softphone() {
                     onClick={handleStartCall}
                     style={{ ...styles.callButton, background: "#f97316", borderColor: "#f97316" }}
                   >
-                    Appeler
+                    Start Call
                   </Button>
                 </Tooltip>
               ) : (
@@ -291,7 +291,7 @@ export default function Softphone() {
                     onClick={handleEndCall}
                     style={styles.callButton}
                   >
-                    Raccrocher
+                    Hang Up
                   </Button>
                 </Tooltip>
               )}
@@ -299,8 +299,8 @@ export default function Softphone() {
 
             {/* Indicateurs de statut */}
             <div style={styles.statusIndicators}>
-              {isMuted && <Tag icon={<SoundOutlined />} color="orange">Micro coupé</Tag>}
-              {isOnHold && <Tag icon={<PauseCircleOutlined />} color="orange">En attente</Tag>}
+              {isMuted && <Tag icon={<SoundOutlined />} color="orange">Muted</Tag>}
+              {isOnHold && <Tag icon={<PauseCircleOutlined />} color="orange">On Hold</Tag>}
             </div>
           </Space>
         </Card>
@@ -321,14 +321,14 @@ export default function Softphone() {
           transition={{ type: "spring" }}
         >
           <PhoneOutlined style={{ fontSize: 60, color: "#f97316", marginBottom: 20 }} />
-          <Title level={4} style={{ color: "#1a1a1a" }}>Appel entrant</Title>
+          <Title level={4} style={{ color: "#1a1a1a" }}>Incoming Call</Title>
           <Text style={{ fontSize: 18, display: "block", marginBottom: 20, color: "#1a1a1a" }}>{incomingCall}</Text>
           <Space>
             <Button type="primary" size="large" icon={<PhoneOutlined />} onClick={handleAcceptCall} style={{ background: "#f97316", borderColor: "#f97316" }}>
-              Accepter
+              Accept
             </Button>
             <Button danger size="large" icon={<CloseCircleOutlined />} onClick={handleRejectCall}>
-              Refuser
+              Reject
             </Button>
           </Space>
         </motion.div>
@@ -336,7 +336,7 @@ export default function Softphone() {
 
       {/* Modal Historique */}
       <Modal
-        title="Historique des appels"
+        title="Call History"
         open={showHistory}
         onCancel={() => setShowHistory(false)}
         footer={null}
@@ -354,7 +354,7 @@ export default function Softphone() {
                 <List.Item.Meta
                   avatar={<PhoneOutlined style={{ color: "#f97316" }} />}
                   title={<Text strong style={{ color: "#1a1a1a" }}>{call.number}</Text>}
-                  description={<span style={{ color: "#666" }}>Durée: {formatTime(call.duration)} • {call.date} {call.time}</span>}
+                  description={<span style={{ color: "#666" }}>Duration: {formatTime(call.duration)} • {call.date} {call.time}</span>}
                 />
               </List.Item>
             </motion.div>
@@ -362,7 +362,7 @@ export default function Softphone() {
         />
         {callHistory.length === 0 && (
           <div style={{ textAlign: "center", padding: 40 }}>
-            <Text type="secondary" style={{ color: "#666" }}>Aucun historique d'appel</Text>
+            <Text type="secondary" style={{ color: "#666" }}>No call History</Text>
           </div>
         )}
       </Modal>

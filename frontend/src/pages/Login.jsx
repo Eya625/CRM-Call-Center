@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Card, Input, Button, Typography, message, Spin, Badge, Progress } from "antd";
+import {
+  Card,
+  Input,
+  Button,
+  Typography,
+  message,
+  Spin,
+  Badge,
+  Progress,
+} from "antd";
 import {
   UserOutlined,
   LockOutlined,
@@ -23,7 +32,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
-  const [agentStatus, setAgentStatus] = useState("disponible");
+  const [agentStatus, setAgentStatus] = useState("available");
   const [callVolume, setCallVolume] = useState(0);
   const [activeCalls, setActiveCalls] = useState(0);
 
@@ -38,32 +47,52 @@ export default function Login() {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      message.error("Veuillez entrer votre email et mot de passe");
+      message.error("Please enter your email and password");
       return;
     }
 
     setLoading(true);
 
-    // Animation de connexion
+    // Petite animation pour UX
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     try {
+      // 🔹 Appel API existante
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/auth/login`,
         { email, password },
       );
 
-      setUser(res.data);
+      const user = res.data;
+
+      // 🔹 Mettre l'utilisateur dans le state
+      setUser(user);
+
+      // 🔹 Stocker l'utilisateur pour session persistante
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // 🔹 Message succès
       message.success({
-        content: "Connexion réussie ! Bienvenue dans le centre d'appels 📞",
+        content: "Login successful! Welcome to the call center 📞",
         icon: <CustomerServiceOutlined />,
         duration: 3,
       });
 
-      setTimeout(() => navigate("/dashboard"), 500);
+      // 🔹 Redirection intelligente selon rôle
+      if (user.role === "agent") {
+        navigate("/agent");
+      } else if (user.role === "manager") {
+        navigate("/manager");
+      } else {
+        navigate("/"); // fallback si rôle inconnu
+      }
     } catch (err) {
       console.error(err);
-      message.error(err.response?.data?.error || "Échec de la connexion");
+
+      // 🔹 Message erreur propre
+      message.error(err.response?.data?.error || "Login failed");
+    } finally {
+      // 🔹 Toujours désactiver le loading
       setLoading(false);
     }
   };
@@ -106,8 +135,8 @@ export default function Login() {
           }
           
           @keyframes glowPulse {
-            0%, 100% { box-shadow: 0 0 5px #00c6fb; }
-            50% { box-shadow: 0 0 20px #00c6fb; }
+            0%, 100% { box-shadow: 0 0 5px #f97316; }
+            50% { box-shadow: 0 0 20px #f97316; }
           }
           
           .wave-animation {
@@ -129,23 +158,26 @@ export default function Login() {
       >
         <div style={styles.statusContent}>
           <div style={styles.statusItem}>
-            <Badge 
-              status={agentStatus === "disponible" ? "success" : "processing"} 
-              text={`Statut: ${agentStatus === "disponible" ? "Disponible" : "En appel"}`}
+            <Badge
+              status={agentStatus === "available" ? "success" : "processing"}
+              text={`Status: ${agentStatus === "available" ? "Available" : "On Call"}`}
             />
           </div>
           <div style={styles.statusItem}>
-            <PhoneOutlined style={{ marginRight: 8, color: "#00c6fb" }} />
-            <Text style={{ color: "white" }}>Appels actifs: {activeCalls}</Text>
+            <PhoneOutlined style={{ marginRight: 8, color: "#f97316" }} />
+            <Text style={{ color: "#ffffff" }}>
+              Active calls: {activeCalls}
+            </Text>
           </div>
           <div style={styles.statusItem}>
-            <SoundOutlined style={{ marginRight: 8, color: "#00c6fb" }} />
-            <Text style={{ color: "white" }}>Volume: {callVolume}%</Text>
-            <Progress 
-              percent={callVolume} 
-              size="small" 
+            <SoundOutlined style={{ marginRight: 8, color: "#f97316" }} />
+            <Text style={{ color: "#ffffff" }}>Volume: {callVolume}%</Text>
+            <Progress
+              percent={callVolume}
+              size="small"
               showInfo={false}
-              strokeColor="#00c6fb"
+              strokeColor="#f97316"
+              trailColor="rgba(255,255,255,0.3)"
               style={{ width: 80, marginLeft: 8 }}
             />
           </div>
@@ -194,7 +226,7 @@ export default function Login() {
               Call Center CRM Pro
             </Title>
             <Text type="secondary" style={styles.subtitle}>
-              Solution professionnelle de gestion d'appels
+              Professional call management solution
             </Text>
           </motion.div>
 
@@ -205,8 +237,12 @@ export default function Login() {
           >
             <Input
               size="large"
-              placeholder="Email professionnel"
-              prefix={<UserOutlined style={{ color: emailFocused ? "#00c6fb" : "#999" }} />}
+              placeholder="Professional email"
+              prefix={
+                <UserOutlined
+                  style={{ color: emailFocused ? "#f97316" : "#999" }}
+                />
+              }
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onFocus={() => setEmailFocused(true)}
@@ -215,7 +251,7 @@ export default function Login() {
               style={{
                 ...styles.input,
                 transform: emailFocused ? "scale(1.02)" : "scale(1)",
-                borderColor: emailFocused ? "#00c6fb" : "#d9d9d9",
+                borderColor: emailFocused ? "#f97316" : "#e8e8e8",
               }}
             />
           </motion.div>
@@ -227,8 +263,12 @@ export default function Login() {
           >
             <Input.Password
               size="large"
-              placeholder="Mot de passe"
-              prefix={<LockOutlined style={{ color: passwordFocused ? "#00c6fb" : "#999" }} />}
+              placeholder="Password"
+              prefix={
+                <LockOutlined
+                  style={{ color: passwordFocused ? "#f97316" : "#999" }}
+                />
+              }
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               onFocus={() => setPasswordFocused(true)}
@@ -237,7 +277,7 @@ export default function Login() {
               style={{
                 ...styles.input,
                 transform: passwordFocused ? "scale(1.02)" : "scale(1)",
-                borderColor: passwordFocused ? "#00c6fb" : "#d9d9d9",
+                borderColor: passwordFocused ? "#f97316" : "#e8e8e8",
               }}
             />
           </motion.div>
@@ -259,7 +299,7 @@ export default function Login() {
               icon={!loading && <CustomerServiceOutlined />}
               style={styles.loginButton}
             >
-              {loading ? <Spin /> : "Connexion au centre d'appels"}
+              {loading ? <Spin /> : "Login to Call Center"}
             </Button>
           </motion.div>
 
@@ -269,9 +309,9 @@ export default function Login() {
             transition={{ delay: 0.7 }}
             style={styles.footerText}
           >
-            <Text type="secondary" style={{ fontSize: 12 }}>
-              <PhoneOutlined style={{ marginRight: 5 }} />
-              Support 24/7 • Appuyez sur Entrée pour vous connecter
+            <Text type="secondary" style={{ fontSize: 12, color: "#666" }}>
+              <PhoneOutlined style={{ marginRight: 5, color: "#f97316" }} />
+              24/7 Support • Press Enter to login
             </Text>
           </motion.div>
 
@@ -283,16 +323,28 @@ export default function Login() {
             style={styles.metrics}
           >
             <div style={styles.metricItem}>
-              <Text type="secondary" style={{ fontSize: 11 }}>Temps moyen d'attente</Text>
-              <Text strong style={{ color: "#00c6fb" }}>45s</Text>
+              <Text type="secondary" style={{ fontSize: 11, color: "#666" }}>
+                Avg wait time
+              </Text>
+              <Text strong style={{ color: "#f97316" }}>
+                45s
+              </Text>
             </div>
             <div style={styles.metricItem}>
-              <Text type="secondary" style={{ fontSize: 11 }}>Satisfaction client</Text>
-              <Text strong style={{ color: "#00c6fb" }}>98%</Text>
+              <Text type="secondary" style={{ fontSize: 11, color: "#666" }}>
+                Customer satisfaction
+              </Text>
+              <Text strong style={{ color: "#f97316" }}>
+                98%
+              </Text>
             </div>
             <div style={styles.metricItem}>
-              <Text type="secondary" style={{ fontSize: 11 }}>Appels aujourd'hui</Text>
-              <Text strong style={{ color: "#00c6fb" }}>1,247</Text>
+              <Text type="secondary" style={{ fontSize: 11, color: "#666" }}>
+                Calls today
+              </Text>
+              <Text strong style={{ color: "#f97316" }}>
+                1,247
+              </Text>
             </div>
           </motion.div>
         </Card>
@@ -306,7 +358,7 @@ export default function Login() {
         style={styles.footer}
       >
         <Text style={{ color: "rgba(255,255,255,0.7)", fontSize: 11 }}>
-          © 2024 Call Center CRM Pro • Solution certifiée ISO 27001
+          © 2024 Call Center CRM Pro • ISO 27001 Certified Solution
         </Text>
       </motion.div>
 
@@ -320,14 +372,15 @@ export default function Login() {
           >
             <div style={styles.loadingContent}>
               <Spin size="large" />
-              <Text style={{ color: "white", marginTop: 20 }}>
-                Connexion en cours...
+              <Text style={{ color: "#ffffff", marginTop: 20 }}>
+                Connecting...
               </Text>
-              <Progress 
-                percent={75} 
-                status="active" 
+              <Progress
+                percent={75}
+                status="active"
                 showInfo={false}
-                strokeColor="#00c6fb"
+                strokeColor="#f97316"
+                trailColor="rgba(255,255,255,0.3)"
                 style={{ width: 200, marginTop: 20 }}
               />
             </div>
@@ -346,14 +399,14 @@ const styles = {
     alignItems: "center",
     position: "relative",
     overflow: "hidden",
-    background: "linear-gradient(135deg, #0f2027, #203a43, #2c5364)",
+    background: "#fafafa",
   },
   statusBar: {
     position: "absolute",
     top: 0,
     left: 0,
     right: 0,
-    background: "rgba(0,0,0,0.3)",
+    background: "#1a1a1a",
     backdropFilter: "blur(10px)",
     padding: "10px 20px",
     zIndex: 10,
@@ -368,7 +421,7 @@ const styles = {
   statusItem: {
     display: "flex",
     alignItems: "center",
-    color: "white",
+    color: "#ffffff",
   },
   waveContainer: {
     position: "absolute",
@@ -381,17 +434,18 @@ const styles = {
     zIndex: 1,
   },
   wave: {
-    background: "linear-gradient(180deg, #00c6fb, #005bea)",
+    background: "#f97316",
     borderRadius: 10,
     animation: "wave 1.5s ease-in-out infinite",
   },
   card: {
     width: 420,
     borderRadius: 20,
-    background: "rgba(255,255,255,0.98)",
-    boxShadow: "0 30px 50px rgba(0,0,0,0.3)",
+    background: "#ffffff",
+    boxShadow: "0 8px 32px rgba(0,0,0,0.05)",
     zIndex: 5,
     position: "relative",
+    border: "1px solid #e8e8e8",
   },
   logoContainer: {
     position: "relative",
@@ -399,11 +453,10 @@ const styles = {
   },
   logoIcon: {
     fontSize: 60,
-    color: "#00c6fb",
-    background: "linear-gradient(135deg, #00c6fb, #005bea)",
+    background: "#f97316",
     padding: 15,
     borderRadius: "50%",
-    color: "white",
+    color: "#ffffff",
   },
   ringPulse: {
     position: "absolute",
@@ -411,22 +464,21 @@ const styles = {
     left: "50%",
     width: "100%",
     height: "100%",
-    border: "2px solid #00c6fb",
+    border: "2px solid #f97316",
     borderRadius: "50%",
     transform: "translate(-50%, -50%)",
     animation: "pulse-ring 1.5s ease-out infinite",
   },
   title: {
     textAlign: "center",
-    background: "linear-gradient(135deg, #00c6fb, #005bea)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
+    color: "#1a1a1a",
     marginBottom: 5,
   },
   subtitle: {
     display: "block",
     textAlign: "center",
     marginBottom: 30,
+    color: "#666",
   },
   input: {
     marginBottom: 20,
@@ -434,7 +486,7 @@ const styles = {
     borderRadius: 10,
   },
   loginButton: {
-    background: "linear-gradient(135deg, #00c6fb, #005bea)",
+    background: "#f97316",
     border: "none",
     height: 48,
     fontSize: 16,
@@ -451,7 +503,7 @@ const styles = {
     justifyContent: "space-around",
     marginTop: 25,
     paddingTop: 20,
-    borderTop: "1px solid #f0f0f0",
+    borderTop: "1px solid #e8e8e8",
   },
   metricItem: {
     textAlign: "center",

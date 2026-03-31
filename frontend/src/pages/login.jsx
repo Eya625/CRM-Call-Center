@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Card, Input, Button, Typography, message, Spin, Badge, Progress } from "antd";
+import {
+  Card,
+  Input,
+  Button,
+  Typography,
+  message,
+  Spin,
+  Badge,
+  Progress,
+} from "antd";
 import {
   UserOutlined,
   LockOutlined,
@@ -36,59 +45,57 @@ export default function Login() {
     return () => clearInterval(interval);
   }, []);
 
-
-const handleLogin = async () => {
-  if (!email || !password) {
-    message.error("Please enter your email and password");
-    return;
-  }
-
-  setLoading(true);
-
-  // Petite animation pour UX
-  await new Promise((resolve) => setTimeout(resolve, 1500));
-
-  try {
-    // 🔹 Appel API existante
-    const res = await axios.post(
-      `${import.meta.env.VITE_API_URL}/auth/login`,
-      { email, password }
-    );
-
-    const user = res.data;
-
-    // 🔹 Mettre l'utilisateur dans le state
-    setUser(user);
-
-    // 🔹 Stocker l'utilisateur pour session persistante
-    localStorage.setItem("user", JSON.stringify(user));
-
-    // 🔹 Message succès
-    message.success({
-      content: "Login successful! Welcome to the call center 📞",
-      icon: <CustomerServiceOutlined />,
-      duration: 3,
-    });
-
-    // 🔹 Redirection intelligente selon rôle
-    if (user.role === "agent") {
-      navigate("/agent");
-    } else if (user.role === "manager") {
-      navigate("/manager");
-    } else {
-      navigate("/"); // fallback si rôle inconnu
+  const handleLogin = async () => {
+    if (!email || !password) {
+      message.error("Please enter your email and password");
+      return;
     }
 
-  } catch (err) {
-    console.error(err);
+    setLoading(true);
 
-    // 🔹 Message erreur propre
-    message.error(err.response?.data?.error || "Login failed");
-  } finally {
-    // 🔹 Toujours désactiver le loading
-    setLoading(false);
-  }
-};
+    // Petite animation pour UX
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    try {
+      // 🔹 Appel API existante
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/auth/login`,
+        { email, password },
+      );
+
+      const user = res.data;
+
+      // 🔹 Mettre l'utilisateur dans le state
+      setUser(user);
+
+      // 🔹 Stocker l'utilisateur pour session persistante
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // 🔹 Message succès
+      message.success({
+        content: "Login successful! Welcome to the call center 📞",
+        icon: <CustomerServiceOutlined />,
+        duration: 3,
+      });
+
+      // 🔹 Redirection intelligente selon rôle
+      if (user.role === "agent") {
+        navigate("/agent");
+      } else if (user.role === "manager") {
+        navigate("/manager");
+      } else {
+        navigate("/"); // fallback si rôle inconnu
+      }
+    } catch (err) {
+      console.error(err);
+
+      // 🔹 Message erreur propre
+      message.error(err.response?.data?.error || "Login failed");
+    } finally {
+      // 🔹 Toujours désactiver le loading
+      setLoading(false);
+    }
+  };
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
@@ -151,21 +158,23 @@ const handleLogin = async () => {
       >
         <div style={styles.statusContent}>
           <div style={styles.statusItem}>
-            <Badge 
-              status={agentStatus === "available" ? "success" : "processing"} 
+            <Badge
+              status={agentStatus === "available" ? "success" : "processing"}
               text={`Status: ${agentStatus === "available" ? "Available" : "On Call"}`}
             />
           </div>
           <div style={styles.statusItem}>
             <PhoneOutlined style={{ marginRight: 8, color: "#f97316" }} />
-            <Text style={{ color: "#ffffff" }}>Active calls: {activeCalls}</Text>
+            <Text style={{ color: "#ffffff" }}>
+              Active calls: {activeCalls}
+            </Text>
           </div>
           <div style={styles.statusItem}>
             <SoundOutlined style={{ marginRight: 8, color: "#f97316" }} />
             <Text style={{ color: "#ffffff" }}>Volume: {callVolume}%</Text>
-            <Progress 
-              percent={callVolume} 
-              size="small" 
+            <Progress
+              percent={callVolume}
+              size="small"
               showInfo={false}
               strokeColor="#f97316"
               trailColor="rgba(255,255,255,0.3)"
@@ -229,7 +238,11 @@ const handleLogin = async () => {
             <Input
               size="large"
               placeholder="Professional email"
-              prefix={<UserOutlined style={{ color: emailFocused ? "#f97316" : "#999" }} />}
+              prefix={
+                <UserOutlined
+                  style={{ color: emailFocused ? "#f97316" : "#999" }}
+                />
+              }
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onFocus={() => setEmailFocused(true)}
@@ -251,7 +264,11 @@ const handleLogin = async () => {
             <Input.Password
               size="large"
               placeholder="Password"
-              prefix={<LockOutlined style={{ color: passwordFocused ? "#f97316" : "#999" }} />}
+              prefix={
+                <LockOutlined
+                  style={{ color: passwordFocused ? "#f97316" : "#999" }}
+                />
+              }
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               onFocus={() => setPasswordFocused(true)}
@@ -306,16 +323,28 @@ const handleLogin = async () => {
             style={styles.metrics}
           >
             <div style={styles.metricItem}>
-              <Text type="secondary" style={{ fontSize: 11, color: "#666" }}>Avg wait time</Text>
-              <Text strong style={{ color: "#f97316" }}>45s</Text>
+              <Text type="secondary" style={{ fontSize: 11, color: "#666" }}>
+                Avg wait time
+              </Text>
+              <Text strong style={{ color: "#f97316" }}>
+                45s
+              </Text>
             </div>
             <div style={styles.metricItem}>
-              <Text type="secondary" style={{ fontSize: 11, color: "#666" }}>Customer satisfaction</Text>
-              <Text strong style={{ color: "#f97316" }}>98%</Text>
+              <Text type="secondary" style={{ fontSize: 11, color: "#666" }}>
+                Customer satisfaction
+              </Text>
+              <Text strong style={{ color: "#f97316" }}>
+                98%
+              </Text>
             </div>
             <div style={styles.metricItem}>
-              <Text type="secondary" style={{ fontSize: 11, color: "#666" }}>Calls today</Text>
-              <Text strong style={{ color: "#f97316" }}>1,247</Text>
+              <Text type="secondary" style={{ fontSize: 11, color: "#666" }}>
+                Calls today
+              </Text>
+              <Text strong style={{ color: "#f97316" }}>
+                1,247
+              </Text>
             </div>
           </motion.div>
         </Card>
@@ -346,9 +375,9 @@ const handleLogin = async () => {
               <Text style={{ color: "#ffffff", marginTop: 20 }}>
                 Connecting...
               </Text>
-              <Progress 
-                percent={75} 
-                status="active" 
+              <Progress
+                percent={75}
+                status="active"
                 showInfo={false}
                 strokeColor="#f97316"
                 trailColor="rgba(255,255,255,0.3)"

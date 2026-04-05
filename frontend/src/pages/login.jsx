@@ -223,7 +223,7 @@ export default function Login() {
             transition={{ delay: 0.3 }}
           >
             <Title level={3} style={styles.title}>
-              Call Center CRM Pro
+              TCC Nexus
             </Title>
             <Text type="secondary" style={styles.subtitle}>
               Professional call management solution

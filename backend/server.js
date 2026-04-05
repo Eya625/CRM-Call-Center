@@ -2,6 +2,9 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import pool from "./Config/db.js";
+import leadRoutes from "./Routes/leadRoutes.js";
+import campagneRoutes from "./Routes/campagneRoutes.js";
+import agentRoutes from "./Routes/agentRoutes.js";
 
 import multer from "multer";
 import * as xlsx from "xlsx";
@@ -34,30 +37,17 @@ app.get("/db-crm", async (req, res) => {
 app.post("/auth/login", async (req, res) => {
   const { email, password } = req.body;
 
-  // Validation simple
-  if (!email || !password) {
-    return res.status(400).json({ error: "Email and password are required" });
-  }
+  if (!email || !password) return res.status(400).json({ error: "Email and password are required" });
 
   try {
-    // Vérifier si l'utilisateur existe
-    const userQuery = await pool.query(
-      "SELECT * FROM users WHERE email = $1",
-      [email]
-    );
+    const userQuery = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
 
-    if (userQuery.rows.length === 0) {
-      return res.status(401).json({ error: "Invalid email or password" });
-    }
+    if (userQuery.rows.length === 0) return res.status(401).json({ error: "Invalid email or password" });
 
     const user = userQuery.rows[0];
 
-    // Vérification password (pour l'instant en clair)
-    if (user.password !== password) {
-      return res.status(401).json({ error: "Invalid email or password" });
-    }
+    if (user.password !== password) return res.status(401).json({ error: "Invalid email or password" });
 
-    // On retourne l'utilisateur (id, name, email, role)
     res.json({
       id: user.id,
       name: user.name,
@@ -69,8 +59,21 @@ app.post("/auth/login", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
-// -------------------- FIN LOGIN ROUTE --------------------
 
+pool.query("SELECT NOW()", (err, res) => {
+  if (err) {
+    console.error("DB ERROR:", err);
+  } else {
+    console.log("DB CONNECTED:", res.rows[0]);
+  }
+});
+
+app.use("/api/leads", leadRoutes);
+app.use("/api/campagnes", campagneRoutes);
+app.use("/api/agents", agentRoutes);
+
+
+//  IMPORTANT : utiliser httpServer.listen, pas app.listen
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

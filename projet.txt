@@ -1,0 +1,69 @@
+projet : 
+crm react / node / base de données : postgre sql
+contient option voIP pour l'appel d'un call center (basique) pour tous ces types de travail 
+page login : connexion / page d'acceuil deux ou trois pages etc
+contient 3 users : agent / Admin /  superAdmin (manager)
+contient logo de TCC
+contient seulement top bar et sans sidebar
+on va utiliser le VoIP : ringover (quand va l'intégrer dans notre CRM )
+fonctionnement : l'application doit contenir les options d'import export : le manager utilisent des fichiers excel (seuelemnt acces d'import export pour le manager )et si on fait l'import des documents : contient les numéros des clients qu'ils veulent contacter ou appeler et il y a les boutons d'appel pour chaque numéros  / bouton qualifier (à la fin de contact et la compréhension entre l'agent et le client) le bouton qualifier doit contenir cette liste : injionables / occupé / OK / hors cible (select) 
+on ajoute une calendrier 
+contient paramètre / help au dessous
+
+
+
+
+tache : 
+Page dashboard — Agent Interface
+c'est la page plus importante — l'agent était ici toute la journée . se divise en 3 zones
+Zone gauche — Softphone
+
+Statut agent (Available / On Call / Paused / Wrap-up)
+Boutons pause avec motif (Pause café, Pause déjeuner, Formation...)
+Numéro affiché + timer appel en cours
+Boutons: Mute / Hold / Raccrocher / Transfer
+
+Zone centre — Fiche client (Lead)
+
+Nom, prénom, téléphone du contact
+Campagne en cours
+Champ disposition (résultat appel): Vente / Rappel / Pas intéressé / Fax / NRP...
+Si disposition = Rappel → date/heure rappel
+Bouton "Sauvegarder et appel suivant"
+
+/ bouton qualifier (à la fin de contact et la compréhension entre l'agent et le client) le bouton qualifier doit contenir cette liste : injionables / occupé / OK / hors cible (select) 
+on ajoute une calendrier 
+contient paramètre / help au dessous
+
+
+
+
+
+
+
+Zone droite — Script d'appel
+
+Texte du script que l'agent lit pendant l'appel
+Historique des 5 derniers appels du même contact 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

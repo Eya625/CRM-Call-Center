@@ -14,6 +14,8 @@ import {
   LockOutlined,
   PhoneOutlined,
   CustomerServiceOutlined,
+  SoundOutlined,
+  AudioOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -21,57 +23,6 @@ import useAuthStore from "../store/authStore";
 import { motion, AnimatePresence } from "framer-motion";
 
 const { Title, Text } = Typography;
-
-// --- COMPOSANT LOGO TCC NEXUS (SVG récréé selon l'image) ---
-const TccNexusLogo = ({ style }) => (
-  <svg
-    viewBox="0 0 100 100"
-    style={style}
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <defs>
-      {/* Dégradé principal du logo */}
-      <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#FF4181" /> {/* Rose vif du haut */}
-        <stop offset="60%" stopColor="#9C27B0" /> {/* Violet du milieu */}
-        <stop offset="100%" stopColor="#2196F3" /> {/* Bleu vif du bas */}
-      </linearGradient>
-      {/* Effet de lueur (Glow) interne */}
-      <filter id="glow">
-        <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-        <feMerge>
-          <feMergeNode in="coloredBlur"/>
-          <feMergeNode in="SourceGraphic"/>
-        </feMerge>
-      </filter>
-    </defs>
-    <g filter="url(#glow)">
-      {/* Cercle du haut (antenne) */}
-      <circle cx="50" cy="15" r="7" fill="url(#logoGradient)" />
-      
-      {/* Ondes radio centrales (lignes courbes) */}
-      <path d="M 40 32 Q 50 25 60 32" stroke="url(#logoGradient)" strokeWidth="3" fill="none" strokeLinecap="round"/>
-      <path d="M 33 42 Q 50 32 67 42" stroke="url(#logoGradient)" strokeWidth="3" fill="none" strokeLinecap="round"/>
-      <path d="M 27 52 Q 50 38 73 52" stroke="url(#logoGradient)" strokeWidth="3" fill="none" strokeLinecap="round"/>
-
-      {/* Nœuds de réseau du bas (triangles connectés) */}
-      {/* Nœud gauche */}
-      <circle cx="20" cy="85" r="5" fill="#F44336" /> {/* Point rouge vif */}
-      <path d="M 30 65 L 20 85" stroke="#F44336" strokeWidth="2.5" strokeLinecap="round"/>
-      <path d="M 30 65 L 45 65" stroke="#9C27B0" strokeWidth="2.5" strokeLinecap="round"/>
-      <path d="M 45 65 L 20 85" stroke="#9C27B0" strokeWidth="1.5" strokeDasharray="3 3"/>
-      <circle cx="30" cy="65" r="4" fill="#E91E63" />
-
-      {/* Nœud droit */}
-      <circle cx="80" cy="85" r="5" fill="#2196F3" /> {/* Point bleu vif */}
-      <path d="M 70 65 L 80 85" stroke="#2196F3" strokeWidth="2.5" strokeLinecap="round"/>
-      <path d="M 70 65 L 55 65" stroke="#9C27B0" strokeWidth="2.5" strokeLinecap="round"/>
-      <path d="M 55 65 L 80 85" stroke="#9C27B0" strokeWidth="1.5" strokeDasharray="3 3"/>
-      <circle cx="70" cy="65" r="4" fill="#3F51B5" />
-    </g>
-  </svg>
-);
-// -----------------------------------------------------------
 
 export default function Login() {
   const navigate = useNavigate();
@@ -85,7 +36,7 @@ export default function Login() {
   const [callVolume, setCallVolume] = useState(0);
   const [activeCalls, setActiveCalls] = useState(0);
 
-  // Simulation du trafic d'appels en temps réel (Logique inchangée)
+  // Simulation du trafic d'appels en temps réel
   useEffect(() => {
     const interval = setInterval(() => {
       setCallVolume(Math.floor(Math.random() * 100));
@@ -122,7 +73,7 @@ export default function Login() {
 
       // 🔹 Message succès
       message.success({
-        content: "Login successful! Welcome to the TCC Nexus 📞",
+        content: "Login successful! Welcome to the call center 📞",
         icon: <CustomerServiceOutlined />,
         duration: 3,
       });
@@ -152,23 +103,8 @@ export default function Login() {
     }
   };
 
-  // --- PALETTE DE COULEURS ÉCLAIRCIE ---
-  const colors = {
-    bg: "#ffffff", // Fond global blanc
-    cardBg: "#ffffff", // Fond de carte blanc
-    pinkNeon: "#FF4181", // Rose vif du haut
-    purpleNeon: "#9C27B0", // Violet du milieu
-    blueNeon: "#2196F3", // Bleu vif du bas
-    textMain: "#1a1a1a", // Texte principal presque noir
-    textSec: "rgba(0, 0, 0, 0.55)", // Texte secondaire gris foncé pour contraste
-    border: "#e0e0e0", // Bordures claires
-  };
-
-  // Dégradé pour le bouton et éléments interactifs
-  const actionGradient = `linear-gradient(135deg, ${colors.pinkNeon} 0%, ${colors.purpleNeon} 50%, ${colors.blueNeon} 100%)`;
-
   return (
-    <div style={styles.container(colors)}>
+    <div style={styles.container}>
       <style>
         {`
           @keyframes ring {
@@ -180,12 +116,12 @@ export default function Login() {
           
           @keyframes pulse-ring {
             0% { transform: scale(0.8); opacity: 0.5; }
-            100% { transform: scale(1.4); opacity: 0; }
+            100% { transform: scale(1.3); opacity: 0; }
           }
           
           @keyframes wave {
-            0%, 100% { transform: translateY(0); opacity: 0.5; }
-            50% { transform: translateY(-10px); opacity: 1; }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
           }
           
           @keyframes slideInLeft {
@@ -199,13 +135,8 @@ export default function Login() {
           }
           
           @keyframes glowPulse {
-            0%, 100% { box-shadow: 0 4px 15px rgba(156, 39, 176, 0.3); }
-            50% { box-shadow: 0 6px 25px rgba(33, 150, 243, 0.4); }
-          }
-
-          @keyframes textGlow {
-            0%, 100% { text-shadow: 0 0 5px rgba(33, 150, 243, 0.1); }
-            50% { text-shadow: 0 0 15px rgba(33, 150, 243, 0.3); }
+            0%, 100% { box-shadow: 0 0 5px #f97316; }
+            50% { box-shadow: 0 0 20px #f97316; }
           }
           
           .wave-animation {
@@ -215,19 +146,6 @@ export default function Login() {
           .ring-animation {
             animation: ring 0.5s ease-in-out;
           }
-
-          /* Style custom pour Antd Progress afin d'avoir un dégradé */
-          .ant-progress-bg {
-            background: ${actionGradient} !important;
-          }
-
-          /* Forcer la couleur du texte saisi dans les inputs */
-          .ant-input {
-            color: #1a1a1a !important;
-          }
-          .ant-input::placeholder {
-            color: #999999 !important;
-          }
         `}
       </style>
 
@@ -236,54 +154,46 @@ export default function Login() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ type: "spring", stiffness: 100 }}
-        style={styles.statusBar(colors)}
+        style={styles.statusBar}
       >
         <div style={styles.statusContent}>
           <div style={styles.statusItem}>
             <Badge
               status={agentStatus === "available" ? "success" : "processing"}
-              text={
-                <Text style={{color: colors.textMain, marginLeft: 8}}>
-                  {`Status: ${agentStatus === "available" ? "Available" : "On Call"}`}
-                </Text>
-              }
+              text={`Status: ${agentStatus === "available" ? "Available" : "On Call"}`}
             />
           </div>
           <div style={styles.statusItem}>
-            <PhoneOutlined style={{ marginRight: 8, color: colors.blueNeon, filter: `drop-shadow(0 0 2px rgba(33, 150, 243, 0.3))` }} />
-            <Text style={{ color: colors.textMain }}>
+            <PhoneOutlined style={{ marginRight: 8, color: "#f97316" }} />
+            <Text style={{ color: "#ffffff" }}>
               Active calls: {activeCalls}
             </Text>
           </div>
           <div style={styles.statusItem}>
-            <div style={{display:'flex', alignItems:'center', position:'relative', marginRight: 8}}>
-                <div style={{width:16, height:16, borderRadius:'50%', background:colors.pinkNeon, position:'absolute', opacity:0.3, filter:'blur(3px)'}}/>
-                <CustomerServiceOutlined style={{ color: colors.pinkNeon, position:'relative', zIndex:1 }} />
-            </div>
-            <Text style={{ color: colors.textMain }}>Volume: {callVolume}%</Text>
+            <SoundOutlined style={{ marginRight: 8, color: "#f97316" }} />
+            <Text style={{ color: "#ffffff" }}>Volume: {callVolume}%</Text>
             <Progress
               percent={callVolume}
               size="small"
               showInfo={false}
-              railColor="rgba(0,0,0,0.06)"
+              strokeColor="#f97316"
+              trailColor="rgba(255,255,255,0.3)"
               style={{ width: 80, marginLeft: 8 }}
             />
           </div>
         </div>
       </motion.div>
 
-      {/* Animation des ondes sonores (Style Néon) */}
+      {/* Animation des ondes sonores */}
       <div style={styles.waveContainer}>
         {[...Array(5)].map((_, i) => (
           <div
             key={i}
             style={{
               ...styles.wave,
-              background: actionGradient,
               animationDelay: `${i * 0.2}s`,
               height: `${30 + i * 10}px`,
               width: `${3 + i}px`,
-              boxShadow: `0 0 10px rgba(156, 39, 176, 0.3)`,
             }}
           />
         ))}
@@ -294,17 +204,16 @@ export default function Login() {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.6, type: "spring", stiffness: 120 }}
       >
-        <Card style={styles.card(colors)}>
+        <Card style={styles.card}>
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
-            style={{ textAlign: "center", marginBottom: 30 }}
+            style={{ textAlign: "center", marginBottom: 20 }}
           >
-            {/* Logo TCC NEXUS Custom */}
             <div style={styles.logoContainer}>
-              <TccNexusLogo style={styles.logoIcon} />
-              <div style={styles.ringPulse(colors)} />
+              <AudioOutlined style={styles.logoIcon} />
+              <div style={styles.ringPulse} />
             </div>
           </motion.div>
 
@@ -313,10 +222,10 @@ export default function Login() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
-            <Title level={3} style={styles.title(colors)}>
-                TCC <span style={{color: colors.blueNeon, animation: 'textGlow 3s infinite'}}>NEXUS</span>
+            <Title level={3} style={styles.title}>
+              Call Center CRM Pro
             </Title>
-            <Text style={styles.subtitle(colors)}>
+            <Text type="secondary" style={styles.subtitle}>
               Professional call management solution
             </Text>
           </motion.div>
@@ -331,7 +240,7 @@ export default function Login() {
               placeholder="Professional email"
               prefix={
                 <UserOutlined
-                  style={{ color: emailFocused ? colors.blueNeon : "#888" }}
+                  style={{ color: emailFocused ? "#f97316" : "#999" }}
                 />
               }
               value={email}
@@ -339,7 +248,11 @@ export default function Login() {
               onFocus={() => setEmailFocused(true)}
               onBlur={() => setEmailFocused(false)}
               onKeyPress={handleKeyPress}
-              style={styles.input(colors, emailFocused)}
+              style={{
+                ...styles.input,
+                transform: emailFocused ? "scale(1.02)" : "scale(1)",
+                borderColor: emailFocused ? "#f97316" : "#e8e8e8",
+              }}
             />
           </motion.div>
 
@@ -353,7 +266,7 @@ export default function Login() {
               placeholder="Password"
               prefix={
                 <LockOutlined
-                  style={{ color: passwordFocused ? colors.blueNeon : "#888" }}
+                  style={{ color: passwordFocused ? "#f97316" : "#999" }}
                 />
               }
               value={password}
@@ -361,7 +274,11 @@ export default function Login() {
               onFocus={() => setPasswordFocused(true)}
               onBlur={() => setPasswordFocused(false)}
               onKeyPress={handleKeyPress}
-              style={styles.input(colors, passwordFocused)}
+              style={{
+                ...styles.input,
+                transform: passwordFocused ? "scale(1.02)" : "scale(1)",
+                borderColor: passwordFocused ? "#f97316" : "#e8e8e8",
+              }}
             />
           </motion.div>
 
@@ -369,7 +286,7 @@ export default function Login() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.5 }}
-            whileHover={{ scale: 1.02, boxShadow: `0 5px 15px rgba(33, 150, 243, 0.3)` }}
+            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
             <Button
@@ -379,9 +296,10 @@ export default function Login() {
               onClick={handleLogin}
               loading={loading}
               disabled={loading}
-              style={styles.loginButton(colors, actionGradient)}
+              icon={!loading && <CustomerServiceOutlined />}
+              style={styles.loginButton}
             >
-              {loading ? <Spin /> : "Login to TCC Nexus"}
+              {loading ? <Spin /> : "Login to Call Center"}
             </Button>
           </motion.div>
 
@@ -391,42 +309,40 @@ export default function Login() {
             transition={{ delay: 0.7 }}
             style={styles.footerText}
           >
-            <Text style={{ fontSize: 12, color: colors.textSec }}>
+            <Text type="secondary" style={{ fontSize: 12, color: "#666" }}>
+              <PhoneOutlined style={{ marginRight: 5, color: "#f97316" }} />
               24/7 Support • Press Enter to login
             </Text>
           </motion.div>
 
-          {/* Métriques en temps réel (Style Néon) */}
+          {/* Métriques en temps réel */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
-            style={styles.metrics(colors)}
+            style={styles.metrics}
           >
             <div style={styles.metricItem}>
-              <Text style={{ fontSize: 11, color: colors.textSec }}>
+              <Text type="secondary" style={{ fontSize: 11, color: "#666" }}>
                 Avg wait time
               </Text>
-              <br/>
-              <Text strong style={{ color: colors.pinkNeon, textShadow: `0 0 1px rgba(255, 65, 129, 0.2)` }}>
+              <Text strong style={{ color: "#f97316" }}>
                 45s
               </Text>
             </div>
             <div style={styles.metricItem}>
-              <Text style={{ fontSize: 11, color: colors.textSec }}>
+              <Text type="secondary" style={{ fontSize: 11, color: "#666" }}>
                 Customer satisfaction
               </Text>
-              <br/>
-              <Text strong style={{ color: colors.purpleNeon, textShadow: `0 0 1px rgba(156, 39, 176, 0.2)` }}>
+              <Text strong style={{ color: "#f97316" }}>
                 98%
               </Text>
             </div>
             <div style={styles.metricItem}>
-              <Text style={{ fontSize: 11, color: colors.textSec }}>
+              <Text type="secondary" style={{ fontSize: 11, color: "#666" }}>
                 Calls today
               </Text>
-              <br/>
-              <Text strong style={{ color: colors.blueNeon, textShadow: `0 0 1px rgba(33, 150, 243, 0.2)` }}>
+              <Text strong style={{ color: "#f97316" }}>
                 1,247
               </Text>
             </div>
@@ -441,8 +357,8 @@ export default function Login() {
         transition={{ delay: 0.9 }}
         style={styles.footer}
       >
-        <Text style={{ color: "rgba(0, 0, 0, 0.35)", fontSize: 11 }}>
-          © 2024 TCC Nexus • ISO 27001 Certified Call CRM
+        <Text style={{ color: "rgba(255,255,255,0.7)", fontSize: 11 }}>
+          © 2024 Call Center CRM Pro • ISO 27001 Certified Solution
         </Text>
       </motion.div>
 
@@ -452,18 +368,19 @@ export default function Login() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            style={styles.loadingOverlay(colors)}
+            style={styles.loadingOverlay}
           >
             <div style={styles.loadingContent}>
               <Spin size="large" />
-              <Text style={{ color: colors.textMain, display: 'block', marginTop: 20 }}>
-                Connecting to Nexus...
+              <Text style={{ color: "#ffffff", marginTop: 20 }}>
+                Connecting...
               </Text>
               <Progress
                 percent={75}
                 status="active"
                 showInfo={false}
-                railColor="rgba(255,255,255,0.2)"
+                strokeColor="#f97316"
+                trailColor="rgba(255,255,255,0.3)"
                 style={{ width: 200, marginTop: 20 }}
               />
             </div>
@@ -474,28 +391,26 @@ export default function Login() {
   );
 }
 
-// --- STYLES MIS À JOUR (White Theme) ---
 const styles = {
-  container: (colors) => ({
+  container: {
     height: "100vh",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     position: "relative",
     overflow: "hidden",
-    background: colors.bg,
-  }),
-  statusBar: (colors) => ({
+    background: "#fafafa",
+  },
+  statusBar: {
     position: "absolute",
     top: 0,
     left: 0,
     right: 0,
-    background: "rgba(255, 255, 255, 0.8)", // Semi-transparent white
-    backdropFilter: "blur(15px)",
-    padding: "12px 20px",
+    background: "#1a1a1a",
+    backdropFilter: "blur(10px)",
+    padding: "10px 20px",
     zIndex: 10,
-    borderBottom: `1px solid ${colors.border}`,
-  }),
+  },
   statusContent: {
     display: "flex",
     justifyContent: "space-between",
@@ -506,6 +421,7 @@ const styles = {
   statusItem: {
     display: "flex",
     alignItems: "center",
+    color: "#ffffff",
   },
   waveContainer: {
     position: "absolute",
@@ -516,91 +432,79 @@ const styles = {
     gap: 5,
     alignItems: "center",
     zIndex: 1,
-    opacity: 0.15, // Plus discret sur fond blanc
   },
   wave: {
+    background: "#f97316",
     borderRadius: 10,
     animation: "wave 1.5s ease-in-out infinite",
   },
-  card: (colors) => ({
+  card: {
     width: 420,
-    borderRadius: 24,
-    background: colors.cardBg,
-    boxShadow: "0 10px 40px rgba(0,0,0,0.06), 0 2px 10px rgba(0,0,0,0.02)",
+    borderRadius: 20,
+    background: "#ffffff",
+    boxShadow: "0 8px 32px rgba(0,0,0,0.05)",
     zIndex: 5,
     position: "relative",
-    border: `1px solid ${colors.border}`,
-    padding: 20,
-  }),
+    border: "1px solid #e8e8e8",
+  },
   logoContainer: {
     position: "relative",
     display: "inline-block",
-    padding: 10,
   },
   logoIcon: {
-    width: 100,
-    height: 100,
-    filter: 'drop-shadow(0 2px 8px rgba(156, 39, 176, 0.25))'
+    fontSize: 60,
+    background: "#f97316",
+    padding: 15,
+    borderRadius: "50%",
+    color: "#ffffff",
   },
-  ringPulse: (colors) => ({
+  ringPulse: {
     position: "absolute",
     top: "50%",
     left: "50%",
-    width: "110%",
-    height: "110%",
-    border: `2px solid ${colors.purpleNeon}`,
+    width: "100%",
+    height: "100%",
+    border: "2px solid #f97316",
     borderRadius: "50%",
     transform: "translate(-50%, -50%)",
-    animation: "pulse-ring 2s ease-out infinite",
-    opacity: 0.2,
-  }),
-  title: (colors) => ({
+    animation: "pulse-ring 1.5s ease-out infinite",
+  },
+  title: {
     textAlign: "center",
-    color: colors.textMain,
+    color: "#1a1a1a",
     marginBottom: 5,
-    fontWeight: 800,
-    letterSpacing: '1px',
-    textTransform: 'uppercase',
-  }),
-  subtitle: (colors) => ({
+  },
+  subtitle: {
     display: "block",
     textAlign: "center",
-    marginBottom: 40,
-    color: colors.textSec,
-    fontSize: 13,
-  }),
-  input: (colors, focused) => ({
+    marginBottom: 30,
+    color: "#666",
+  },
+  input: {
     marginBottom: 20,
     transition: "all 0.3s",
-    borderRadius: 12,
-    background: focused ? "#ffffff" : "#fcfcfc",
-    border: focused ? `1px solid ${colors.blueNeon}` : `1px solid ${colors.border}`,
-    height: 48,
-    boxShadow: focused ? `0 0 10px rgba(33, 150, 243, 0.15)` : 'none',
-  }),
-  loginButton: (colors, actionGradient) => ({
-    background: actionGradient,
+    borderRadius: 10,
+  },
+  loginButton: {
+    background: "#f97316",
     border: "none",
-    height: 52,
+    height: 48,
     fontSize: 16,
-    fontWeight: 700,
-    textTransform: 'uppercase',
-    letterSpacing: '1px',
-    borderRadius: 12,
+    fontWeight: "bold",
+    borderRadius: 10,
     marginTop: 10,
-    animation: 'glowPulse 4s infinite',
-  }),
+  },
   footerText: {
     textAlign: "center",
-    marginTop: 25,
+    marginTop: 20,
   },
-  metrics: (colors) => ({
+  metrics: {
     display: "flex",
     justifyContent: "space-around",
-    marginTop: 30,
+    marginTop: 25,
     paddingTop: 20,
-    borderTop: `1px solid ${colors.border}`,
-  }),
+    borderTop: "1px solid #e8e8e8",
+  },
   metricItem: {
     textAlign: "center",
   },
@@ -612,19 +516,19 @@ const styles = {
     textAlign: "center",
     zIndex: 5,
   },
-  loadingOverlay: (colors) => ({
+  loadingOverlay: {
     position: "fixed",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    background: "rgba(0, 0, 0, 0.85)", // On garde le loading dark pour l'ambiance TCC
-    backdropFilter: "blur(8px)",
+    background: "rgba(0,0,0,0.8)",
+    backdropFilter: "blur(5px)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     zIndex: 1000,
-  }),
+  },
   loadingContent: {
     textAlign: "center",
   },

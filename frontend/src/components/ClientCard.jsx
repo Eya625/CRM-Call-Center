@@ -1,335 +1,175 @@
-import React, { useState, useEffect } from "react";
-import { Card, Input, Select, Button, DatePicker, Space, Modal, message, Calendar, Badge, Tooltip, Divider, Timeline, Steps, Avatar, Typography } from "antd";
-import { 
-  SaveOutlined, 
-  PhoneOutlined, 
-  CalendarOutlined, 
-  QuestionCircleOutlined, 
-  CheckCircleOutlined, 
-  LoadingOutlined,
-  UserOutlined,
-  MailOutlined,
-  EnvironmentOutlined,
-  ClockCircleOutlined,
-  StarOutlined,
-  HistoryOutlined,
-  WhatsAppOutlined,
-  FacebookOutlined
-} from "@ant-design/icons";
-import dayjs from "dayjs";
-import { motion, AnimatePresence } from "framer-motion";
-import api from "./../api/axios"; 
-
-const { Option } = Select;
-const { Step } = Steps;
+// frontend/src/components/ClientCard.jsx
+import React, { useEffect, useState } from "react";
+import { Card, Badge, Typography, Space, Spin, Button } from "antd";
+import { PhoneOutlined, MailOutlined, EnvironmentOutlined, RightOutlined, LeftOutlined } from "@ant-design/icons";
+import {  updateLead ,getLeads } from "../api/api.jsx";
+import { Select, DatePicker, Input, message } from "antd";
 const { Text } = Typography;
 
-export default function ClientCard() {
-  const [disposition, setDisposition] = useState("");
-  const [rappelDate, setRappelDate] = useState(null);
-  const [qualification, setQualification] = useState("");
-  const [isCalendarVisible, setIsCalendarVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [callHistory, setCallHistory] = useState([]);
-  const [clientNotes, setClientNotes] = useState("");
-  const [clientRating, setClientRating] = useState(0);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [contactInfo, setContactInfo] = useState(null); // initialement null, on récupère du backend
+export default function ClientCard({ setCurrentNumber }) {
+  const [clients, setClients] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0); // client actuel
+const [qualification, setQualification] = useState("");
+const [callbackDate, setCallbackDate] = useState(null);
+const [note, setNote] = useState("");
+  // Récupération des leads
+  useEffect(() => {
+    const fetchLeads = async () => {
+      try {
+        const res = await getLeads();
+        const mappedLeads = res.data.map(l => ({
+          id: l.id,
+          nom: l.nom,
+          prenom: l.prenom,
+          telephone: l.telephone,
+          email: l.email || "",
+          adresse: l.adresse || "",
+          statut: l.statut || "",
+          commentaire: l.commentaire || "",
+          agent_name: l.agent_name || "",
+          campagne_id: l.campagne_id,
+        }));
+        setClients(mappedLeads);
 
-  // Récupération des données client depuis l'API
-useEffect(() => {
-  const fetchClient = async () => {
-    try {
-      // Appel de l'API pour récupérer le prochain lead
-      const res = await api.get('/leads/next'); 
-      const lead = res.data;
-
-      if(lead) {
-        // Mapping des champs PostgreSQL vers contactInfo attendu par le composant
-        setContactInfo({
-          id: lead.id,                  // pour save/update
-          nom: lead.last_name,
-          prenom: lead.first_name,
-          telephone: lead.phone,
-          email: lead.email || '',
-          ville: lead.address || '',
-          campagne: lead.campaign_id,
-          statut: lead.call_status
-        });
-
-        // Si tu as une table historique séparée, tu peux faire un autre fetch ici
-        setCallHistory([]); // sinon on met vide pour l'instant
-      }
-    } catch (err) {
-      console.error(err);
-      message.error("Erreur lors de la récupération des données client");
-    }
-  };
-
-  fetchClient();
-}, []);
-
-  const handleSave = async () => {
-    if (!disposition) {
-      message.warning("Veuillez sélectionner un résultat d'appel");
-      return;
-    }
-
-    if (disposition === "Rappel" && !rappelDate) {
-      message.warning("Veuillez sélectionner une date et heure pour le rappel");
-      return;
-    }
-
-    if (!contactInfo) return;
-
-    setIsLoading(true);
-    try {
-      // Envoi des informations d'appel au backend
-      const payload = {
-        clientId: contactInfo.id,
-        disposition,
-        rappelDate: rappelDate ? dayjs(rappelDate).toISOString() : null,
-        notes: clientNotes,
-        qualification
-      };
-
-      const res = await api.post("/calls", payload); // endpoint pour enregistrer l'appel
-      if(res.data.success) {
-        message.success({ content: "Contact sauvegardé avec succès !", icon: <CheckCircleOutlined />, duration: 2 });
-
-        // Mettre à jour l'historique
-        const newCall = {
-          date: dayjs().format("YYYY-MM-DD"),
-          time: dayjs().format("HH:mm"),
-          duration: "00:00",
-          result: disposition
-        };
-        setCallHistory([newCall, ...callHistory]);
-
-        setCurrentStep(currentStep + 1);
-
-        // Réinitialisation des champs
-        setDisposition("");
-        setRappelDate(null);
-        setQualification("");
-        setClientNotes("");
-
-        // Récupérer le prochain client
-        const nextClient = await api.get("/clients/next");
-        if(nextClient.data) {
-          setContactInfo(nextClient.data.client);
-          setCallHistory(nextClient.data.callHistory || []);
-          setCurrentStep(0);
+        // Affiche automatiquement le numéro du premier client
+        if (mappedLeads.length > 0 && setCurrentNumber) {
+          setCurrentNumber(mappedLeads[0].telephone);
         }
+      } catch (err) {
+        console.error("Erreur récupération leads:", err);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error(err);
-      message.error("Erreur lors de la sauvegarde de l'appel");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleQualify = () => {
-    if (!qualification) {
-      message.warning("Veuillez sélectionner une qualification");
-      return;
-    }
-
-    const qualificationMessages = {
-      "OK": "Client qualifié ✅ - Prêt pour la suite",
-      "injionables": "Client injoignable 📞 - Rappel programmé",
-      "occupé": "Client occupé ⏰ - Rappel ultérieur",
-      "hors cible": "Client hors cible 🎯 - Désistement"
     };
-    
-    message.success(qualificationMessages[qualification]);
-    setQualification("");
-    setCurrentStep(currentStep + 1);
+    fetchLeads();
+  }, [setCurrentNumber]);
+
+  if (loading) {
+    return (
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height: "100%" }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (clients.length === 0) {
+    return <div>Aucun client disponible</div>;
+  }
+
+  const client = clients[currentIndex];
+
+  // Navigation clients
+  const goPrev = () => {
+    setCurrentIndex(i => {
+      const newIndex = Math.max(i - 1, 0);
+      if (setCurrentNumber) setCurrentNumber(clients[newIndex].telephone);
+      return newIndex;
+    });
   };
 
-  const getDispositionColor = () => {
-    switch(disposition) {
-      case "Vente": return "#f97316";
-      case "Rappel": return "#f97316";
-      case "Pas intéressé": return "#f97316";
-      default: return "#d9d9d9";
-    }
+  const goNext = () => {
+    setCurrentIndex(i => {
+      const newIndex = Math.min(i + 1, clients.length - 1);
+      if (setCurrentNumber) setCurrentNumber(clients[newIndex].telephone);
+      return newIndex;
+    });
   };
+const saveQualification = async () => {
+  try {
+    await updateLead(client.id, {
+      ...client,
+      statut: qualification,
+      commentaire:
+        qualification === "Rappeler"
+          ? `Rappel prévu: ${callbackDate}`
+          : note,
+    });
 
-  const steps = [
-    { title: "Identification", icon: <UserOutlined /> },
-    { title: "Qualification", icon: <StarOutlined /> },
-    { title: "Result", icon: <CheckCircleOutlined /> },
-  ];
+    message.success("Qualification enregistrée");
 
-  if (!contactInfo) return <div>Chargement du client...</div>;
-
+  } catch (err) {
+    console.error(err);
+    message.error("Erreur lors de la sauvegarde");
+  }
+};
   return (
-    <>
-      <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
-        <Card
-          title={<Space><PhoneOutlined style={{ color: "#f97316" }} /><span style={{ fontSize: "18px", fontWeight: "bold" }}>Client Card - Call Center</span></Space>}
-          extra={
-            <Space>
-              <Tooltip title="Script d'appel">
-                <Button type="text" icon={<QuestionCircleOutlined style={{ color: "#f97316" }} />} onClick={() => message.info("Suivez le script d'appel")} />
-              </Tooltip>
-              <Tooltip title="Historique">
-                <Button type="text" icon={<HistoryOutlined style={{ color: "#f97316" }} />} onClick={() => message.info("Affichage de l'historique")} />
-              </Tooltip>
-            </Space>
-          }
-        >
-          <Steps current={currentStep} size="small" style={{ marginBottom: 24 }}>
-            {steps.map(step => <Step key={step.title} title={step.title} icon={step.icon} />)}
-          </Steps>
+    <div style={{ maxWidth: 500, margin: "0 auto" }}>
+      <Card title={`Client ${currentIndex + 1} / ${clients.length}`} style={{ borderRadius: 16, position: "relative" }}>
+        <Space direction="vertical" style={{ width: "100%" }}>
+          <Text strong style={{ fontSize: 16 }}>
+            {client.prenom} {client.nom} {client.agent_name && `(Agent: ${client.agent_name})`}
+          </Text>
+          <div><PhoneOutlined /> {client.telephone}</div>
+          <div><MailOutlined /> {client.email || "-"}</div>
+          <div><EnvironmentOutlined /> {client.adresse || "-"}</div>
+          <div>Status: <Badge status={client.statut ? "processing" : "default"} text={client.statut || "N/A"} /></div>
+          {client.commentaire && <div>Note: {client.commentaire}</div>}
+        </Space>
 
-          <motion.div whileHover={{ scale: 1.02 }} style={{ display: "flex", gap: 16 }}>
-            <Avatar size={64} icon={<UserOutlined />} />
-            <div>
-              <Text strong style={{ fontSize: 18 }}>{contactInfo.prenom} {contactInfo.nom}</Text>
-              <div><PhoneOutlined /> {contactInfo.telephone}</div>
-              <div><MailOutlined /> {contactInfo.email}</div>
-              <div><EnvironmentOutlined /> {contactInfo.ville}</div>
-              <div><Badge status="processing" /> Campagne: {contactInfo.campagne}</div>
-            </div>
-            <Badge count={disposition ? "✓" : 0} style={{ backgroundColor: getDispositionColor() }} />
-          </motion.div>
+        {/* Navigation Clients */}
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 16 }}>
+          <Button 
+            type="primary" 
+            shape="circle" 
+            icon={<LeftOutlined />} 
+            onClick={goPrev} 
+            disabled={currentIndex === 0} 
+          />
+          <Button 
+            type="primary" 
+            shape="circle" 
+            icon={<RightOutlined />} 
+            onClick={goNext} 
+            disabled={currentIndex === clients.length - 1} 
+          />
+        </div>
+      </Card>
+      <Card
+  title="Qualification du client"
+  style={{ borderRadius: 16, marginTop: 16 }}
+>
+  <Space direction="vertical" style={{ width: "100%" }}>
 
-          <Divider />
+    <Select
+      placeholder="Choisir qualification"
+      value={qualification}
+      onChange={setQualification}
+      style={{ width: "100%" }}
+    >
+      <Select.Option value="OK">OK</Select.Option>
+      <Select.Option value="Hors cible">Hors cible</Select.Option>
+      <Select.Option value="Injoignable">Injoignable</Select.Option>
+      <Select.Option value="Rappeler">Rappeler</Select.Option>
+      <Select.Option value="Autre">Autre</Select.Option>
+    </Select>
 
-          <Space direction="vertical" size="middle" style={{ width: "100%" }}>
-            <div>
-              <PhoneOutlined /> Call Result
-              <Select value={disposition} onChange={setDisposition} style={{ width: "100%" }} placeholder="Sélectionnez le résultat de l'appel" size="large">
-                <Option value="Vente">Sale - Closed Client</Option>
-                <Option value="Rappel">Callback - To Recontact</Option>
-                <Option value="Pas intéressé">Not Interested</Option>
-                <Option value="Fax">Fax - Send Documentation</Option>
-                <Option value="NRP">DNC - Do Not Call</Option>
-              </Select>
-            </div>
+    {/* Cas Rappeler */}
+    {qualification === "Rappeler" && (
+      <DatePicker
+        showTime
+        style={{ width: "100%" }}
+        onChange={(date, dateString) => setCallbackDate(dateString)}
+      />
+    )}
 
-            <AnimatePresence>
-              {disposition === "Rappel" && (
-                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} style={{ overflow: "hidden" }}>
-                  <CalendarOutlined /> Date et heure du rappel
-                  <DatePicker
-                    showTime={{ format: "HH:mm" }}
-                    format="DD/MM/YYYY HH:mm"
-                    style={{ width: "100%" }}
-                    placeholder="Sélectionnez date et heure rappel"
-                    size="large"
-                    value={rappelDate}
-                    onChange={setRappelDate}
-                    disabledDate={(current) => current && current < dayjs().startOf("day")}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
+    {/* Cas Autre */}
+    {(qualification === "Autre" ||
+      qualification === "OK" ||
+      qualification === "Hors cible") && (
+      <Input.TextArea
+        placeholder="Ajouter une note..."
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+      />
+    )}
 
-            <div>
-              <StarOutlined /> Contact Qualification
-              <Space style={{ width: "100%" }}>
-                <Select value={qualification} onChange={setQualification} style={{ flex: 1 }} placeholder="Qualifier le client" size="large">
-                  <Option value="injionables">Unreachable</Option>
-                  <Option value="occupé">Busy</Option>
-                  <Option value="OK">OK - Qualified</Option>
-                  <Option value="hors cible">Out of Target</Option>
-                </Select>
-                <Button type="primary" onClick={handleQualify}>Qualify</Button>
-              </Space>
-            </div>
+    <Button type="primary" onClick={saveQualification}>
+      Enregistrer
+    </Button>
 
-            <div>
-              <ClockCircleOutlined /> Call Notes
-              <Input.TextArea rows={3} placeholder="Ajoutez des notes sur cet appel..." value={clientNotes} onChange={(e) => setClientNotes(e.target.value)} />
-            </div>
-
-            <div>
-              <HistoryOutlined /> Call History
-              <Timeline>
-                {callHistory.slice(0, 3).map((call, idx) => (
-                  <Timeline.Item key={idx} color="#f97316">
-                    <Text strong>{call.date} {call.time}</Text>
-                    <div><Text type="secondary">Résultat: {call.result}</Text></div>
-                  </Timeline.Item>
-                ))}
-              </Timeline>
-            </div>
-
-            <Button type="primary" block icon={isLoading ? <LoadingOutlined /> : <SaveOutlined />} onClick={handleSave} loading={isLoading}>
-              Save & Next Call
-            </Button>
-          </Space>
-        </Card>
-      </motion.div>
-    </>
+  </Space>
+</Card>
+    </div>
   );
 }
-
-const styles = {
-  card: {
-    borderRadius: 20,
-    background: "#ffffff",
-    border: "none",
-    boxShadow: "0 8px 32px rgba(0,0,0,0.05)",
-  },
-  cardBody: {
-    padding: 24,
-  },
-  contactHeader: {
-    display: "flex",
-    alignItems: "center",
-    gap: 20,
-    padding: 16,
-    background: "#fafafa",
-    borderRadius: 16,
-    marginBottom: 16,
-    position: "relative",
-    border: "1px solid #e8e8e8",
-  },
-  contactAvatar: {
-    position: "relative",
-  },
-  contactInfo: {
-    flex: 1,
-  },
-  contactName: {
-    display: "flex",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  sectionLabel: {
-    marginBottom: 8,
-    fontWeight: 500,
-    color: "#1a1a1a",
-  },
-  qualifyButton: {
-    background: "#f97316",
-    border: "none",
-  },
-  saveButton: {
-    height: 48,
-    fontSize: 16,
-    fontWeight: "bold",
-    background: "#f97316",
-    border: "none",
-    boxShadow: "0 2px 8px rgba(249,115,22,0.3)",
-  },
-  socialButtons: {
-    display: "flex",
-    justifyContent: "center",
-    gap: 12,
-    marginTop: 16,
-  },
-  calendarEvent: {
-    background: "#f97316",
-    color: "white",
-    padding: "2px 4px",
-    borderRadius: 4,
-    fontSize: 12,
-    marginTop: 4,
-  },
-};

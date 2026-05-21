@@ -1,3 +1,4 @@
+// frontend/src/pages/Agent.jsx
 import React, { useState, useEffect } from "react";
 import {
   Row,
@@ -20,6 +21,7 @@ import CallScript from "../components/CallScript";
 import { motion } from "framer-motion";
 
 export default function Agent() {
+  // --- Stats du tableau de bord ---
   const [stats, setStats] = useState({
     callsToday: 0,
     avgCallDuration: 0,
@@ -29,6 +31,10 @@ export default function Agent() {
 
   const [lastUpdate, setLastUpdate] = useState(new Date());
 
+  // --- Numéro actuellement sélectionné, partagé entre ClientCard et Softphone ---
+  const [currentNumber, setCurrentNumber] = useState("");
+
+  // --- Simuler la mise à jour des stats toutes les 5 secondes ---
   useEffect(() => {
     const interval = setInterval(() => {
       setStats({
@@ -43,6 +49,7 @@ export default function Agent() {
     return () => clearInterval(interval);
   }, []);
 
+  // --- Formatage durée en MM:SS ---
   const formatDuration = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -51,7 +58,7 @@ export default function Agent() {
 
   return (
     <div style={{ padding: 20 }}>
-      {/* Stats */}
+      {/* --- Stats --- */}
       <Row gutter={16} style={{ marginBottom: 20 }}>
         <Col span={6}>
           <AntCard>
@@ -101,14 +108,19 @@ export default function Agent() {
         </Col>
       </Row>
 
-      {/* Main sections */}
+      {/* --- Sections principales --- */}
       <Row gutter={20}>
         <Col span={7}>
-          <Softphone />
+          {/* Softphone avec state partagé pour le numéro */}
+          <Softphone
+            currentNumber={currentNumber}
+            setCurrentNumber={setCurrentNumber}
+          />
         </Col>
 
         <Col span={10}>
-          <ClientCard />
+          {/* ClientCard qui met à jour le numéro dans le softphone */}
+          <ClientCard setCurrentNumber={setCurrentNumber} />
         </Col>
 
         <Col span={7}>
@@ -116,7 +128,7 @@ export default function Agent() {
         </Col>
       </Row>
 
-      {/* Update indicator */}
+      {/* --- Indicateur de mise à jour --- */}
       <motion.div style={{ position: "fixed", bottom: 20, right: 20 }}>
         <Tooltip
           title={`Dernière mise à jour: ${lastUpdate.toLocaleTimeString()}`}

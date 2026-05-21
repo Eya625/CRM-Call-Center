@@ -29,3 +29,9 @@ export const getLeads   = ()          => API.get("/api/leads");
 export const createLead = (data)      => API.post("/api/leads", data);
 export const updateLead = (id, data)  => API.put(`/api/leads/${id}`, data);
 export const deleteLead = (id)        => API.delete(`/api/leads/${id}`);
+
+
+
+// ─── AUTO-DIALER ──────────────────────────────
+export const startCalling = (agentId) =>
+  API.post("/start-calling", { agentId }); // agentId optionnel

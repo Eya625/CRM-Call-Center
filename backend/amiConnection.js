@@ -16,10 +16,10 @@ const ami = new Ami({
 });
 
 // === Gestion des événements AMI ===
-ami.on("connect", () => console.log(chalk.green("✅ Connected to Asterisk AMI")));
-ami.on("disconnect", () => console.log(chalk.yellow("⚠️ Disconnected from AMI")));
-ami.on("error", (err) => console.error(chalk.red("❌ AMI Error:"), err));
-ami.on("event", (event) => console.log(chalk.blue("📨 AMI Event:"), event));
+ami.on("connect", () => console.log(chalk.green(" Connected to Asterisk AMI")));
+ami.on("disconnect", () => console.log(chalk.yellow(" Disconnected from AMI")));
+ami.on("error", (err) => console.error(chalk.red(" AMI Error:"), err));
+ami.on("event", (event) => console.log(chalk.blue("AMI Event:"), event));
 
 // === Fonctions utilitaires ===
 export async function pingAmi() {

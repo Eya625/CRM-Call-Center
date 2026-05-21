@@ -1,0 +1,106 @@
+frontend/
+│
+├── public/
+│   └── index.html
+│
+├── src/
+│   │
+│   ├── assets/              # Images, logo TCC
+│   │
+│   ├── components/          # Composants réutilisables
+│   │   ├── TopBar.jsx
+│   │   ├── CallButton.jsx
+│   │   ├── ContactTable.jsx
+│   │   ├── QualificationModal.jsx
+│   │   └── Loader.jsx
+│   │
+│   ├── pages/               # Pages principales
+│   │   ├── Login.jsx
+│   │   ├── Dashboard.jsx
+│   │   ├── Contacts.jsx
+│   │   ├── Calendar.jsx
+│   │   ├── Settings.jsx
+│   │   └── Help.jsx
+│   │
+│   ├── services/            # Appels API backend
+│   │   ├── api.js
+│   │   ├── authService.js
+│   │   ├── contactService.js
+│   │   ├── callService.js
+│   │   └── importExportService.js
+│   │
+│   ├── hooks/               # Logique personnalisée
+│   │   ├── useAuth.js
+│   │   ├── useSocket.js
+│   │   └── useCall.js
+│   │
+│   ├── context/             # Gestion globale (auth, user)
+│   │   └── AuthContext.jsx
+│   │
+│   ├── routes/              # Routing React
+│   │   └── AppRoutes.jsx
+│   │
+│   ├── utils/
+│   │   └── constants.js
+│   │
+│   ├── App.jsx
+│   └── index.js
+│
+├── package.json
+└── .env
+
+
+backend/
+│
+├── config/                  # Configuration
+│   ├── db.js                # Connexion PostgreSQL
+│   ├── voip.js              # Config Ringover ou Asterisk
+│   └── env.js
+│
+├── controllers/             # Logique des routes
+│   ├── authController.js
+│   ├── userController.js
+│   ├── contactController.js
+│   ├── callController.js
+│   ├── importExportController.js
+│   └── calendarController.js
+│
+├── models/                  # Modèles DB
+│   ├── User.js
+│   ├── Contact.js
+│   ├── Call.js
+│   └── Qualification.js
+│
+├── routes/                  # Routes API
+│   ├── authRoutes.js
+│   ├── userRoutes.js
+│   ├── contactRoutes.js
+│   ├── callRoutes.js
+│   ├── importExportRoutes.js
+│   └── calendarRoutes.js
+│
+├── services/                # Logique métier
+│   ├── callService.js       # appels VoIP
+│   ├── ringoverService.js   # si Ringover
+│   ├── asteriskService.js   # si Asterisk
+│   ├── excelService.js      # import/export Excel
+│   └── notificationService.js
+│
+├── middleware/              # Middlewares
+│   ├── authMiddleware.js
+│   ├── roleMiddleware.js
+│   └── errorMiddleware.js
+│
+├── sockets/                 # Temps réel (Socket.io)
+│   └── socket.js
+│
+├── utils/
+│   ├── logger.js
+│   └── helpers.js
+│
+├── uploads/                 # fichiers Excel importés
+│
+├── server.js                # 🚨 POINT CENTRAL (IMPORTANT)
+├── app.js                   # config Express
+├── package.json
+└── .env
